@@ -1,0 +1,396 @@
+import { Component, OnInit, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { FileService, FileInfo, TreeNode } from '../../services/file.service';
+
+@Component({
+  selector: 'app-file-explorer',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+  ],
+  template: `
+    <div class="file-explorer">
+      <div class="explorer-header">
+        <span class="header-title">Explorer</span>
+        <div class="header-actions">
+          <button mat-icon-button 
+                  matTooltip="Refresh"
+                  (click)="refresh()"
+                  [disabled]="fileService.isLoading()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <div class="explorer-toolbar">
+        <span class="current-path" [matTooltip]="fileService.currentPath()">
+          {{ fileService.currentPath() }}
+        </span>
+      </div>
+      
+      @if (fileService.isLoading() && visibleNodes().length === 0) {
+        <div class="loading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+      }
+      
+      @if (fileService.error()) {
+        <div class="error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ fileService.error() }}</span>
+        </div>
+      }
+      
+      <div class="file-list">
+        @for (node of visibleNodes(); track node.path) {
+          <div class="tree-item" 
+               [class.selected]="isSelected(node)"
+               [class.directory]="node.is_directory"
+               [style.padding-left.px]="getIndent(node)"
+               (click)="onNodeClick(node, $event)">
+            
+            <!-- Expand/collapse toggle for directories -->
+            @if (node.is_directory) {
+              <span class="toggle-icon" (click)="toggleExpand(node, $event)">
+                @if (node.isLoading) {
+                  <mat-spinner diameter="12"></mat-spinner>
+                } @else {
+                  <mat-icon>{{ node.isExpanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+                }
+              </span>
+            } @else {
+              <span class="toggle-spacer"></span>
+            }
+            
+            <!-- File/folder icon -->
+            <mat-icon class="file-icon">
+              {{ node.is_directory ? (node.isExpanded ? 'folder_open' : 'folder') : getFileIcon(node.name) }}
+            </mat-icon>
+            
+            <!-- Name -->
+            <span class="file-name">{{ node.name }}</span>
+            
+            <!-- Size for files -->
+            @if (!node.is_directory && node.size !== undefined) {
+              <span class="file-size">{{ formatSize(node.size) }}</span>
+            }
+          </div>
+        } @empty {
+          @if (!fileService.isLoading() && !fileService.error()) {
+            <div class="empty-state">
+              <mat-icon>folder_open</mat-icon>
+              <span>Empty directory</span>
+            </div>
+          }
+        }
+      </div>
+      
+      @if (fileService.selectedFile()) {
+        <div class="file-preview">
+          <div class="preview-header">
+            <span class="preview-title">{{ fileService.selectedFile()?.name }}</span>
+          </div>
+          <pre class="preview-content">{{ fileService.fileContent() }}</pre>
+        </div>
+      }
+    </div>
+  `,
+  styles: [`
+    .file-explorer {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    .explorer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px var(--spacing-md);
+      border-bottom: 1px solid var(--border-default);
+      height: 36px;
+      flex-shrink: 0;
+      flex-wrap: nowrap;
+    }
+    
+    .header-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      flex-shrink: 0;
+      
+      button {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+    
+    .explorer-toolbar {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-muted);
+    }
+    
+    .current-path {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: var(--spacing-lg);
+    }
+    
+    .error {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md);
+      color: var(--accent-error);
+      font-size: 12px;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    .file-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--spacing-xs) 0;
+    }
+    
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px var(--spacing-sm);
+      padding-right: var(--spacing-md);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      min-height: 26px;
+      
+      &:hover {
+        background: var(--bg-hover);
+      }
+      
+      &.selected {
+        background: var(--bg-tertiary);
+      }
+      
+      &.directory .file-icon {
+        color: var(--accent-warning);
+      }
+    }
+    
+    .toggle-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--text-muted);
+      }
+      
+      mat-spinner {
+        margin: 3px;
+      }
+      
+      &:hover mat-icon {
+        color: var(--text-primary);
+      }
+    }
+    
+    .toggle-spacer {
+      width: 18px;
+      flex-shrink: 0;
+    }
+    
+    .file-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
+    
+    .file-name {
+      flex: 1;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .file-size {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-xl);
+      color: var(--text-muted);
+      
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+      
+      span {
+        font-size: 12px;
+      }
+    }
+    
+    .file-preview {
+      border-top: 1px solid var(--border-default);
+      max-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .preview-header {
+      padding: var(--spacing-xs) var(--spacing-md);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-muted);
+    }
+    
+    .preview-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .preview-content {
+      flex: 1;
+      overflow: auto;
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  `]
+})
+export class FileExplorerComponent implements OnInit {
+  // Computed signal for visible nodes
+  visibleNodes = computed(() => this.fileService.getVisibleNodes());
+  
+  constructor(public fileService: FileService) {}
+  
+  ngOnInit(): void {
+    this.fileService.initTree();
+  }
+  
+  onNodeClick(node: TreeNode, event: Event): void {
+    if (node.is_directory) {
+      // Toggle expand/collapse for directories
+      this.fileService.toggleNode(node);
+    } else {
+      // Select file and show preview
+      this.fileService.selectFile(node);
+    }
+  }
+  
+  toggleExpand(node: TreeNode, event: Event): void {
+    event.stopPropagation();
+    this.fileService.toggleNode(node);
+  }
+  
+  refresh(): void {
+    this.fileService.refresh();
+  }
+  
+  isSelected(node: TreeNode): boolean {
+    return this.fileService.selectedFile()?.path === node.path;
+  }
+  
+  getIndent(node: TreeNode): number {
+    // Base padding (8px) + 16px per level
+    return 8 + (node.level * 16);
+  }
+  
+  getFileIcon(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    
+    const iconMap: Record<string, string> = {
+      'ts': 'code',
+      'js': 'javascript',
+      'py': 'code',
+      'json': 'data_object',
+      'md': 'description',
+      'txt': 'article',
+      'html': 'html',
+      'css': 'css',
+      'scss': 'css',
+      'yml': 'settings',
+      'yaml': 'settings',
+      'xml': 'code',
+      'xsd': 'code',
+    };
+    
+    return iconMap[ext || ''] || 'insert_drive_file';
+  }
+  
+  formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+}
