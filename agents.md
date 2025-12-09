@@ -105,3 +105,5 @@ Agent behavior is configured via environment variables:
 - `ANTHROPIC_API_KEY` - Required for Claude API access
 - `STORAGE_PATH` - Path to agent workspace (default: `./storage`)
 
+
+
