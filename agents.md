@@ -4,6 +4,15 @@
 
 Seriem Agent uses a modular agent architecture built on LangChain with Anthropic Claude models. The system is designed to support hierarchical agent structures with a main orchestrator and specialized subagents.
 
+## Documentation expectation
+
+Agent behavior is part of the product. The rule is simple:
+
+- Every agent/subagent must have a corresponding markdown doc in `docs/seriem-agent/agents/`.
+- Changes to an agent’s **tools**, **scope**, or **system prompt** must update its doc in the same PR.
+
+Current agent docs live in `docs/seriem-agent/agents/` (one file per agent).
+
 ## Current Implementation
 
 ### Main Agent
@@ -97,6 +106,7 @@ subagent_config = {
 
 3. Register with the main agent in `main_agent.py`
 4. The main agent will automatically delegate appropriate tasks
+5. Add/update documentation in `docs/seriem-agent/agents/` (one markdown file per agent)
 
 ## Configuration
 

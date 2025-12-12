@@ -1,6 +1,7 @@
 """WebSocket endpoint for streaming chat responses."""
 
 import json
+import re
 
 from fastapi import WebSocket, WebSocketDisconnect
 from langchain_core.messages import HumanMessage, AIMessage
@@ -54,6 +55,46 @@ async def websocket_endpoint(websocket: WebSocket):
                 agent = get_agent_executor()
                 
                 full_response = ""
+                suppressed_xml_echo = False
+                suppressing_xml_echo = False
+                last_xml_tool_output: str | None = None
+                tool_depth = 0
+
+                # If an XML-producing tool already returned XML, do not let the model
+                # echo that XML back as normal assistant text.
+                XML_TOOL_NAMES = {
+                    "generate_datamodel",
+                    "generate_testcase_from_datamodel",
+                    "modify_testcase_xml",
+                }
+                XML_START_RE = re.compile(r"<\?xml\b|</[A-Za-z_]|<[A-Za-z_]|<!--|<!\[CDATA\[")
+
+                def _maybe_suppress_xml_echo(text: str) -> str:
+                    """Return text to stream to client (possibly empty) and update suppression state."""
+                    nonlocal suppressed_xml_echo, suppressing_xml_echo
+                    if not text:
+                        return text
+
+                    if suppressing_xml_echo:
+                        # Already suppressing: drop everything else.
+                        suppressed_xml_echo = True
+                        return ""
+
+                    if not last_xml_tool_output:
+                        return text
+
+                    # Look for the first XML-ish token in the model stream.
+                    match = XML_START_RE.search(text)
+                    if not match:
+                        return text
+
+                    # Once an XML tool produced XML, treat any subsequent XML-looking stream
+                    # as an echo and suppress it entirely.
+                    suppressing_xml_echo = True
+                    suppressed_xml_echo = True
+
+                    # Keep only what came before the XML (if any); drop the XML itself.
+                    return text[:match.start()].rstrip()
                 
                 # Stream events from the agent
                 async for event in agent.astream_events(
@@ -65,32 +106,44 @@ async def websocket_endpoint(websocket: WebSocket):
                     
                     # Handle streaming text from model
                     if kind == "on_chat_model_stream":
+                        # IMPORTANT: do not stream model output while a tool is executing.
+                        # This prevents nested/subagent model output (often large XML) from
+                        # polluting the normal assistant message. The tool result already
+                        # contains the generated content.
+                        if tool_depth > 0:
+                            continue
+
                         chunk = event.get("data", {}).get("chunk")
                         if chunk:
                             # Handle different content formats
                             content = getattr(chunk, "content", None)
                             if content:
                                 if isinstance(content, str) and content:
-                                    full_response += content
-                                    await websocket.send_text(json.dumps({
-                                        "type": "stream",
-                                        "content": content,
-                                    }))
+                                    safe = _maybe_suppress_xml_echo(content)
+                                    if safe:
+                                        full_response += safe
+                                        await websocket.send_text(json.dumps({
+                                            "type": "stream",
+                                            "content": safe,
+                                        }))
                                 elif isinstance(content, list):
                                     for item in content:
                                         if isinstance(item, dict) and item.get("type") == "text":
                                             text = item.get("text", "")
                                             if text:
-                                                full_response += text
-                                                await websocket.send_text(json.dumps({
-                                                    "type": "stream",
-                                                    "content": text,
-                                                }))
+                                                safe = _maybe_suppress_xml_echo(text)
+                                                if safe:
+                                                    full_response += safe
+                                                    await websocket.send_text(json.dumps({
+                                                        "type": "stream",
+                                                        "content": safe,
+                                                    }))
                     
                     # Handle tool calls
                     elif kind == "on_tool_start":
                         tool_name = event.get("name", "unknown")
                         tool_input = event.get("data", {}).get("input", {})
+                        tool_depth += 1
                         await websocket.send_text(json.dumps({
                             "type": "tool_call",
                             "content": {
@@ -102,13 +155,21 @@ async def websocket_endpoint(websocket: WebSocket):
                     elif kind == "on_tool_end":
                         tool_name = event.get("name", "unknown")
                         tool_output = event.get("data", {}).get("output", "")
+                        tool_output_str = str(tool_output)
+                        tool_depth = max(0, tool_depth - 1)
                         await websocket.send_text(json.dumps({
                             "type": "tool_result",
                             "content": {
                                 "name": tool_name,
-                                "result": str(tool_output),
+                                "result": tool_output_str,
                             },
                         }))
+
+                        # If the tool returned XML, remember it so we can suppress model echo.
+                        if tool_name in XML_TOOL_NAMES:
+                            stripped = tool_output_str.lstrip()
+                            if stripped.startswith("<") and len(stripped) >= 200:
+                                last_xml_tool_output = tool_output_str
                     
                     # Capture final response from chain end
                     elif kind == "on_chain_end":
@@ -117,7 +178,12 @@ async def websocket_endpoint(websocket: WebSocket):
                             last_msg = output["messages"][-1] if output["messages"] else None
                             if last_msg and hasattr(last_msg, "content"):
                                 content = last_msg.content
-                                if isinstance(content, str) and content and content != full_response:
+                                if (
+                                    isinstance(content, str)
+                                    and content
+                                    and content != full_response
+                                    and not suppressed_xml_echo
+                                ):
                                     # Only send if we haven't streamed this content
                                     if not full_response:
                                         full_response = content

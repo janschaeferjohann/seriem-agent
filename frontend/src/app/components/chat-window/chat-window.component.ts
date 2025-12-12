@@ -80,11 +80,14 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
                           <div class="message-text" [innerHTML]="formatContent(part.content)"></div>
                         }
                       } @else if (part.type === 'tool_call') {
-                        <div class="tool-call">
+                        <div class="tool-call" [class.subagent-tool]="isSubagentTool(part.toolCall.name)">
                           <div class="tool-top">
                             <div class="tool-header">
-                              <mat-icon>build</mat-icon>
+                              <mat-icon>{{ isSubagentTool(part.toolCall.name) ? 'smart_toy' : 'build' }}</mat-icon>
                               <span class="tool-name">{{ part.toolCall.name }}</span>
+                              @if (isSubagentTool(part.toolCall.name)) {
+                                <span class="tool-badge">Subagent</span>
+                              }
                             </div>
                             @if (part.toolCall.result) {
                               <button
@@ -123,11 +126,14 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
                   @if (message.toolCalls && message.toolCalls.length > 0) {
                     <div class="tool-calls">
                       @for (toolCall of message.toolCalls; track $index) {
-                        <div class="tool-call">
+                        <div class="tool-call" [class.subagent-tool]="isSubagentTool(toolCall.name)">
                           <div class="tool-top">
                             <div class="tool-header">
-                              <mat-icon>build</mat-icon>
+                              <mat-icon>{{ isSubagentTool(toolCall.name) ? 'smart_toy' : 'build' }}</mat-icon>
                               <span class="tool-name">{{ toolCall.name }}</span>
+                              @if (isSubagentTool(toolCall.name)) {
+                                <span class="tool-badge">Subagent</span>
+                              }
                             </div>
                             @if (toolCall.result) {
                               <button
@@ -566,6 +572,10 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
       font-size: 12px;
       position: relative;
     }
+
+    .tool-call.subagent-tool {
+      border-left: 3px solid var(--accent-secondary);
+    }
     
     .tool-top {
       display: flex;
@@ -587,6 +597,22 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
         width: 14px;
         height: 14px;
       }
+    }
+
+    .tool-call.subagent-tool .tool-header {
+      color: var(--accent-secondary);
+    }
+
+    .tool-badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(81, 165, 86, 0.15);
+      color: var(--accent-secondary);
+      border: 1px solid rgba(81, 165, 86, 0.35);
     }
     
     .tool-toggle {
@@ -879,6 +905,15 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   
   formatArgs(args: Record<string, unknown>): string {
     return JSON.stringify(args, null, 2);
+  }
+
+  isSubagentTool(toolName: string | undefined | null): boolean {
+    if (!toolName) return false;
+    return (
+      toolName === 'generate_datamodel' ||
+      toolName === 'generate_testcase_from_datamodel' ||
+      toolName === 'modify_testcase_xml'
+    );
   }
 
   private readonly toolResultExpanded = new WeakMap<ToolCall, boolean>();

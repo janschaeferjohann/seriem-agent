@@ -12,6 +12,13 @@ export interface ChatMessage {
    * When present, the UI should render `parts` instead of `content/toolCalls`.
    */
   parts?: ChatMessagePart[];
+
+  /**
+   * UI-only flags (not persisted): used to suppress model echo of large XML that
+   * already exists as a tool result.
+   */
+  _hasXmlToolOutput?: boolean;
+  _suppressingXmlEcho?: boolean;
 }
 
 export interface ToolCall {
@@ -138,6 +145,17 @@ export class AgentService {
   private handleMessage(data: string): void {
     try {
       const message: WebSocketMessage = JSON.parse(data);
+
+      const isXmlToolName = (name?: string) =>
+        name === 'generate_datamodel' ||
+        name === 'generate_testcase_from_datamodel' ||
+        name === 'modify_testcase_xml';
+
+      const looksLikeXmlStart = (text: string) =>
+        /<\?xml\b|<\/[A-Za-z_]|<[A-Za-z_]|<!--|<!\[CDATA\[/.test(text);
+
+      const hasToolInFlight = (msg: ChatMessage | undefined | null) =>
+        !!msg?.toolCalls?.some(tc => !tc.result);
       
       switch (message.type) {
         case 'stream':
@@ -147,6 +165,22 @@ export class AgentService {
             const lastMsg = updated[updated.length - 1];
             if (lastMsg?.role === 'assistant') {
               const chunk = message.content as string;
+
+              // If a subagent/tool already produced large XML, suppress model echo of it.
+              if (lastMsg._suppressingXmlEcho) {
+                return updated;
+              }
+              if (lastMsg._hasXmlToolOutput && looksLikeXmlStart(chunk)) {
+                lastMsg._suppressingXmlEcho = true;
+                return updated;
+              }
+
+              // Also suppress XML-looking stream content while any tool call is in-flight.
+              // This prevents nested/subagent streaming from polluting the chat body.
+              if (hasToolInFlight(lastMsg) && looksLikeXmlStart(chunk)) {
+                return updated;
+              }
+
               lastMsg.content += chunk;
 
               // Keep ordered parts for UI rendering
@@ -194,6 +228,16 @@ export class AgentService {
               const toolCall = lastMsg.toolCalls.find(tc => tc.name === toolResultContent.name && !tc.result);
               if (toolCall) {
                 toolCall.result = toolResultContent.result;
+              }
+
+              // Mark that we have a large XML tool output so we can suppress model echo.
+              if (
+                isXmlToolName(toolResultContent.name) &&
+                typeof toolResultContent.result === 'string' &&
+                toolResultContent.result.trimStart().startsWith('<') &&
+                toolResultContent.result.length >= 200
+              ) {
+                lastMsg._hasXmlToolOutput = true;
               }
 
               // Also update ordered parts (same tool call object reference when possible)
