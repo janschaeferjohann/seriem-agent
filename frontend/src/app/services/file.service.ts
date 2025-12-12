@@ -174,7 +174,6 @@ export class FileService {
       this.toggleNode(file as TreeNode);
     } else {
       this.selectedFile.set(file);
-      this.readFile(file.path);
     }
   }
   

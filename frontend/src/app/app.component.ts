@@ -102,6 +102,7 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
     
     .content {

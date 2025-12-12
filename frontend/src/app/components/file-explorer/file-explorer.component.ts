@@ -31,12 +31,6 @@ import { FileService, FileInfo, TreeNode } from '../../services/file.service';
         </div>
       </div>
       
-      <div class="explorer-toolbar">
-        <span class="current-path" [matTooltip]="fileService.currentPath()">
-          {{ fileService.currentPath() }}
-        </span>
-      </div>
-      
       @if (fileService.isLoading() && visibleNodes().length === 0) {
         <div class="loading">
           <mat-spinner diameter="24"></mat-spinner>
@@ -93,22 +87,22 @@ import { FileService, FileInfo, TreeNode } from '../../services/file.service';
           }
         }
       </div>
-      
-      @if (fileService.selectedFile()) {
-        <div class="file-preview">
-          <div class="preview-header">
-            <span class="preview-title">{{ fileService.selectedFile()?.name }}</span>
-          </div>
-          <pre class="preview-content">{{ fileService.fileContent() }}</pre>
-        </div>
-      }
     </div>
   `,
   styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+    }
+
     .file-explorer {
       display: flex;
       flex-direction: column;
       height: 100%;
+      min-height: 0;
       overflow: hidden;
     }
     
@@ -156,24 +150,6 @@ import { FileService, FileInfo, TreeNode } from '../../services/file.service';
       }
     }
     
-    .explorer-toolbar {
-      display: flex;
-      align-items: center;
-      padding: var(--spacing-xs) var(--spacing-sm);
-      background: var(--bg-tertiary);
-      border-bottom: 1px solid var(--border-muted);
-    }
-    
-    .current-path {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-secondary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-    }
-    
     .loading {
       display: flex;
       justify-content: center;
@@ -196,7 +172,8 @@ import { FileService, FileInfo, TreeNode } from '../../services/file.service';
     }
     
     .file-list {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       overflow-y: auto;
       padding: var(--spacing-xs) 0;
     }
@@ -296,36 +273,6 @@ import { FileService, FileInfo, TreeNode } from '../../services/file.service';
       }
     }
     
-    .file-preview {
-      border-top: 1px solid var(--border-default);
-      max-height: 200px;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .preview-header {
-      padding: var(--spacing-xs) var(--spacing-md);
-      background: var(--bg-tertiary);
-      border-bottom: 1px solid var(--border-muted);
-    }
-    
-    .preview-title {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    
-    .preview-content {
-      flex: 1;
-      overflow: auto;
-      padding: var(--spacing-sm) var(--spacing-md);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.6;
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
   `]
 })
 export class FileExplorerComponent implements OnInit {

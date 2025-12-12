@@ -703,7 +703,7 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
     
     .input-wrapper {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       gap: var(--spacing-sm);
       background: var(--bg-tertiary);
       border: 1px solid var(--border-default);
