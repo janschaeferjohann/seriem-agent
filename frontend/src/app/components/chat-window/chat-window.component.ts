@@ -72,29 +72,93 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
                 <span class="message-time">{{ formatTime(message.timestamp) }}</span>
               </div>
               <div class="message-body">
-                @if (message.content) {
-                  <div class="message-text" [innerHTML]="formatContent(message.content)"></div>
-                }
-                @if (message.toolCalls && message.toolCalls.length > 0) {
-                  <div class="tool-calls">
-                    @for (toolCall of message.toolCalls; track $index) {
-                      <div class="tool-call">
-                        <div class="tool-header">
-                          <mat-icon>build</mat-icon>
-                          <span class="tool-name">{{ toolCall.name }}</span>
-                        </div>
-                        @if (toolCall.args) {
-                          <pre class="tool-args">{{ formatArgs(toolCall.args) }}</pre>
+                @if (message.parts && message.parts.length > 0) {
+                  <div class="message-parts">
+                    @for (part of message.parts; track $index) {
+                      @if (part.type === 'text') {
+                        @if (part.content) {
+                          <div class="message-text" [innerHTML]="formatContent(part.content)"></div>
                         }
-                        @if (toolCall.result) {
-                          <div class="tool-result">
-                            <span class="result-label">Result:</span>
-                            <pre class="result-content">{{ toolCall.result }}</pre>
+                      } @else if (part.type === 'tool_call') {
+                        <div class="tool-call">
+                          <div class="tool-top">
+                            <div class="tool-header">
+                              <mat-icon>build</mat-icon>
+                              <span class="tool-name">{{ part.toolCall.name }}</span>
+                            </div>
+                            @if (part.toolCall.result) {
+                              <button
+                                mat-icon-button
+                                class="tool-toggle"
+                                [matTooltip]="isToolResultExpanded(part.toolCall) ? 'Hide result' : 'Show result'"
+                                (click)="toggleToolResult(part.toolCall, $event)">
+                                <mat-icon>{{ isToolResultExpanded(part.toolCall) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                              </button>
+                            }
                           </div>
-                        }
-                      </div>
+                          @if (part.toolCall.args) {
+                            <pre class="tool-args">{{ formatArgs(part.toolCall.args) }}</pre>
+                          }
+                          @if (part.toolCall.result) {
+                            @if (isToolResultExpanded(part.toolCall)) {
+                              <div class="tool-result">
+                                <span class="result-label">Result:</span>
+                                <pre class="result-content">{{ part.toolCall.result }}</pre>
+                              </div>
+                            } @else {
+                              <div class="tool-result tool-result-collapsed">
+                                <span class="result-label">Result:</span>
+                                <span class="result-collapsed-text">Hidden</span>
+                              </div>
+                            }
+                          }
+                        </div>
+                      }
                     }
                   </div>
+                } @else {
+                  @if (message.content) {
+                    <div class="message-text" [innerHTML]="formatContent(message.content)"></div>
+                  }
+                  @if (message.toolCalls && message.toolCalls.length > 0) {
+                    <div class="tool-calls">
+                      @for (toolCall of message.toolCalls; track $index) {
+                        <div class="tool-call">
+                          <div class="tool-top">
+                            <div class="tool-header">
+                              <mat-icon>build</mat-icon>
+                              <span class="tool-name">{{ toolCall.name }}</span>
+                            </div>
+                            @if (toolCall.result) {
+                              <button
+                                mat-icon-button
+                                class="tool-toggle"
+                                [matTooltip]="isToolResultExpanded(toolCall) ? 'Hide result' : 'Show result'"
+                                (click)="toggleToolResult(toolCall, $event)">
+                                <mat-icon>{{ isToolResultExpanded(toolCall) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                              </button>
+                            }
+                          </div>
+                          @if (toolCall.args) {
+                            <pre class="tool-args">{{ formatArgs(toolCall.args) }}</pre>
+                          }
+                          @if (toolCall.result) {
+                            @if (isToolResultExpanded(toolCall)) {
+                              <div class="tool-result">
+                                <span class="result-label">Result:</span>
+                                <pre class="result-content">{{ toolCall.result }}</pre>
+                              </div>
+                            } @else {
+                              <div class="tool-result tool-result-collapsed">
+                                <span class="result-label">Result:</span>
+                                <span class="result-collapsed-text">Hidden</span>
+                              </div>
+                            }
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
                 }
                 @if (message.isStreaming) {
                   <span class="streaming-indicator">●</span>
@@ -371,104 +435,108 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
       line-height: 1.6;
     }
     
+    .message-parts {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+    
     .message-text {
       word-break: break-word;
+    }
+
+    /* Styles for markdown-ish HTML generated via [innerHTML] (needs ::ng-deep) */
+    :host ::ng-deep .message-text {
+      h2, h3, h4 {
+        margin-top: 24px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--text-primary);
+        padding-top: 8px;
+      }
       
-      :host ::ng-deep {
-        h2, h3, h4 {
-          margin-top: 24px;
-          margin-bottom: 10px;
-          font-weight: 600;
-          color: var(--text-primary);
-          padding-top: 8px;
-        }
-        
-        h2 {
-          font-size: 1.25rem;
-          border-bottom: 1px solid var(--border-default);
-          padding-bottom: 4px;
-        }
-        
-        h3 {
-          font-size: 1.1rem;
-        }
-        
-        h4 {
-          font-size: 1rem;
-        }
-        
-        strong {
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-        
-        em {
-          font-style: italic;
-        }
+      h2 {
+        font-size: 1.25rem;
+        border-bottom: 1px solid var(--border-default);
+        padding-bottom: 4px;
+      }
+      
+      h3 {
+        font-size: 1.1rem;
+      }
+      
+      h4 {
+        font-size: 1rem;
+      }
+      
+      strong {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      
+      em {
+        font-style: italic;
+      }
+      
+      code {
+        font-family: var(--font-mono);
+        background: var(--bg-tertiary);
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        font-size: 0.9em;
+        color: var(--kw-red, #E30018);
+      }
+      
+      pre {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-default);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        overflow-x: auto;
+        margin: var(--spacing-sm) 0;
         
         code {
-          font-family: var(--font-mono);
-          background: var(--bg-tertiary);
-          padding: 2px 6px;
-          border-radius: var(--radius-sm);
-          font-size: 0.9em;
-          color: var(--kw-red, #E30018);
-        }
-        
-        pre {
-          background: var(--bg-tertiary);
-          border: 1px solid var(--border-default);
-          padding: var(--spacing-md);
-          border-radius: var(--radius-md);
-          overflow-x: auto;
-          margin: var(--spacing-sm) 0;
-          
-          code {
-            background: none;
-            padding: 0;
-            color: var(--text-primary);
-            display: block;
-            white-space: pre;
-          }
-        }
-        
-        ul, ol {
-          margin: 8px 0;
-          padding-left: 0;
-          list-style: none;
-        }
-        
-        li {
-          margin: 4px 0;
-          line-height: 1.6;
-          position: relative;
-          padding-left: 1em;
-          
-          &::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--text-secondary);
-          }
-        }
-        
-        ol li {
-          counter-increment: list-counter;
-          
-          &::before {
-            content: counter(list-counter) ".";
-          }
-        }
-        
-        ol {
-          counter-reset: list-counter;
-        }
-        
-        br {
+          background: none;
+          padding: 0;
+          color: var(--text-primary);
           display: block;
-          content: "";
-          margin-top: 0.25em;
+          white-space: pre;
         }
+      }
+      
+      ul, ol {
+        margin: 8px 0;
+        padding-left: 0;
+        list-style: none;
+      }
+      
+      li {
+        margin: 4px 0;
+        line-height: 1.6;
+        padding-left: 0;
+        
+        &::before {
+          content: "• ";
+          color: var(--text-secondary);
+        }
+      }
+      
+      ol li {
+        counter-increment: list-counter;
+        
+        &::before {
+          content: counter(list-counter) ". ";
+        }
+      }
+      
+      ol {
+        counter-reset: list-counter;
+      }
+      
+      br {
+        display: block;
+        content: "";
+        margin-top: 0.25em;
       }
     }
     
@@ -496,6 +564,15 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
       border-radius: var(--radius-md);
       padding: var(--spacing-sm);
       font-size: 12px;
+      position: relative;
+    }
+    
+    .tool-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--spacing-xs);
+      margin-bottom: var(--spacing-xs);
     }
     
     .tool-header {
@@ -503,12 +580,27 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
       align-items: center;
       gap: var(--spacing-xs);
       color: var(--accent-primary);
-      margin-bottom: var(--spacing-xs);
+      margin-bottom: 0;
       
       mat-icon {
         font-size: 14px;
         width: 14px;
         height: 14px;
+      }
+    }
+    
+    .tool-toggle {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
     }
     
@@ -538,6 +630,23 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
         display: block;
         margin-bottom: var(--spacing-xs);
       }
+    }
+    
+    .tool-result-collapsed {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      
+      .result-label {
+        display: inline;
+        margin: 0;
+      }
+    }
+    
+    .result-collapsed-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
     }
     
     .chat-input {
@@ -770,6 +879,17 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   
   formatArgs(args: Record<string, unknown>): string {
     return JSON.stringify(args, null, 2);
+  }
+
+  private readonly toolResultExpanded = new WeakMap<ToolCall, boolean>();
+
+  isToolResultExpanded(toolCall: ToolCall): boolean {
+    return this.toolResultExpanded.get(toolCall) ?? false;
+  }
+
+  toggleToolResult(toolCall: ToolCall, event?: Event): void {
+    event?.stopPropagation();
+    this.toolResultExpanded.set(toolCall, !this.isToolResultExpanded(toolCall));
   }
   
   private scrollToBottom(): void {

@@ -7,6 +7,11 @@ export interface ChatMessage {
   timestamp: Date;
   isStreaming?: boolean;
   toolCalls?: ToolCall[];
+  /**
+   * Optional ordered parts for rendering interleaved text + tool calls.
+   * When present, the UI should render `parts` instead of `content/toolCalls`.
+   */
+  parts?: ChatMessagePart[];
 }
 
 export interface ToolCall {
@@ -14,6 +19,10 @@ export interface ToolCall {
   args: Record<string, unknown>;
   result?: string;
 }
+
+export type ChatMessagePart =
+  | { type: 'text'; content: string }
+  | { type: 'tool_call'; toolCall: ToolCall };
 
 export interface WebSocketMessage {
   type: 'stream' | 'tool_call' | 'tool_result' | 'done' | 'error';
@@ -104,6 +113,7 @@ export class AgentService {
       timestamp: new Date(),
       isStreaming: true,
       toolCalls: [],
+      parts: [],
     };
     
     this.messages.update(msgs => [...msgs, assistantMessage]);
@@ -136,7 +146,17 @@ export class AgentService {
             const updated = [...msgs];
             const lastMsg = updated[updated.length - 1];
             if (lastMsg?.role === 'assistant') {
-              lastMsg.content += message.content as string;
+              const chunk = message.content as string;
+              lastMsg.content += chunk;
+
+              // Keep ordered parts for UI rendering
+              lastMsg.parts ??= [];
+              const lastPart = lastMsg.parts[lastMsg.parts.length - 1];
+              if (lastPart?.type === 'text') {
+                lastPart.content += chunk;
+              } else {
+                lastMsg.parts.push({ type: 'text', content: chunk });
+              }
             }
             return updated;
           });
@@ -144,15 +164,21 @@ export class AgentService {
           
         case 'tool_call':
           // Add tool call to current message
-          const toolCallContent = message.content as { name: string; args: Record<string, unknown> };
+          const toolCallContent = message.content as { name: string; args?: Record<string, unknown> };
           this.messages.update(msgs => {
             const updated = [...msgs];
             const lastMsg = updated[updated.length - 1];
             if (lastMsg?.role === 'assistant' && lastMsg.toolCalls) {
-              lastMsg.toolCalls.push({
+              const toolCall: ToolCall = {
                 name: toolCallContent.name,
-                args: toolCallContent.args,
-              });
+                args: toolCallContent.args ?? {},
+              };
+
+              lastMsg.toolCalls.push(toolCall);
+
+              // Insert tool call in ordered parts for UI rendering
+              lastMsg.parts ??= [];
+              lastMsg.parts.push({ type: 'tool_call', toolCall });
             }
             return updated;
           });
@@ -168,6 +194,16 @@ export class AgentService {
               const toolCall = lastMsg.toolCalls.find(tc => tc.name === toolResultContent.name && !tc.result);
               if (toolCall) {
                 toolCall.result = toolResultContent.result;
+              }
+
+              // Also update ordered parts (same tool call object reference when possible)
+              if (lastMsg.parts) {
+                const toolPart = lastMsg.parts.find(
+                  p => p.type === 'tool_call' && p.toolCall.name === toolResultContent.name && !p.toolCall.result
+                );
+                if (toolPart && toolPart.type === 'tool_call') {
+                  toolPart.toolCall.result = toolResultContent.result;
+                }
               }
             }
             return updated;
