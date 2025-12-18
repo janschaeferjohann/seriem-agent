@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified" xmlns:dom="urn:kwsoft:mtext:tonic:dom">
+	<!-- Extends -->
+	<xs:include id="AbstractDataRow" schemaLocation="./AbstractDataRow.xsd"/>
+	<!-- /Extends -->
+	<xs:import id="Expression" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/Script.xsd"/>
+	<xs:import id="DateValueFormat" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/format/DateValueFormat.xsd"/> <!-- DerivedElement -->
+	<xs:import id="NumberValueFormat" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/format/NumberValueFormat.xsd"/> <!-- DerivedElement -->
+	<xs:import id="TextValueFormat" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/format/TextValueFormat.xsd"/> <!-- DerivedElement -->
+	<xs:import id="AlternateValueFormat" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/format/AlternateValueFormat.xsd"/> <!-- DerivedElement -->
+	<xs:import id="BooleanValueFormat" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../.././Data/xsd/format/BooleanValueFormat.xsd"/> <!-- DerivedElement -->
+  		<xs:complexType name="DynamicDataRowType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractDataRowType"> 
+					<xs:sequence>
+		 				<xs:element name="Expression" type="dom:ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:choice minOccurs="0" maxOccurs="1">
+		 					<xs:element name="DateValueFormat" type="dom:DateValueFormatType" minOccurs="0" maxOccurs="1"> <!-- DerivedElement -->
+		 						<xs:annotation>
+  									<xs:documentation>
+  										Formats and parses date and time values using locale-sensitive or user-defined patterns.
+  									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+		 					<xs:element name="NumberValueFormat" type="dom:NumberValueFormatType" minOccurs="0" maxOccurs="1"> <!-- DerivedElement -->
+		 						<xs:annotation>
+  									<xs:documentation>
+  										Formats and parses numbers using locale-sensitive or user-defined symbols,
+such as decimal separator, grouping separator or currency symbol. Allows
+defining number of fractional digits, leading zeroes, currency pattern, etc.
+  									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+		 					<xs:element name="TextValueFormat" type="dom:TextValueFormatType" minOccurs="0" maxOccurs="1"> <!-- DerivedElement -->
+		 						<xs:annotation>
+  									<xs:documentation>
+  										Formats and parses boolean values. Appends defined prefix and suffix when formatting the value.
+  									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+		 					<xs:element name="AlternateValueFormat" type="dom:AlternateValueFormatType" minOccurs="0" maxOccurs="1"> <!-- DerivedElement -->
+		 						<xs:annotation>
+  									<xs:documentation>
+  										Formats values using the given {@link AbstractValueFormat}. 
+Allows parsing {@link String} values, using several alternative {@link AbstractValueFormat} - first 
+successfully parsed object is returned.
+  									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+		 					<xs:element name="BooleanValueFormat" type="dom:BooleanValueFormatType" minOccurs="0" maxOccurs="1"> <!-- DerivedElement -->
+		 						<xs:annotation>
+  									<xs:documentation>
+  										Formats and parses boolean values using given string representation 
+of TRUE and FALSE values.
+  									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

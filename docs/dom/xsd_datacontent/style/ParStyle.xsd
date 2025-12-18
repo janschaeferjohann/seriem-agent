@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Margin" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Padding" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Border" schemaLocation="../style/proptypes/Borders.xsd"/>
+	<xs:include id="SpaceBefore" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="SpaceAfter" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="BackgroundThroughSpacing" schemaLocation="../style/proptypes/BackgroundThroughSpacingEnum.xsd"/>
+	<xs:include id="BreakBefore" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="BreakAfter" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="VerticalPosition" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="NextCaseCorrection" schemaLocation="../style/proptypes/NextCaseCorrectionEnum.xsd"/>
+	<xs:include id="Align" schemaLocation="../style/proptypes/AlignEnum.xsd"/>
+	<xs:include id="LineSpacing" schemaLocation="../style/proptypes/LineSpacing.xsd"/>
+	<xs:include id="Tabs" schemaLocation="../style/proptypes/Tabs.xsd"/>
+	<xs:include id="Role" schemaLocation="../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="Direction" schemaLocation="../style/proptypes/TextDirectionEnum.xsd"/>
+	<xs:include id="SpanStyle" schemaLocation="../style/SpanStyle.xsd"/> <!-- Child -->
+  		<xs:complexType name="ParStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Margin" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Padding" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Border" type="BordersType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Rectangular element border definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceBefore" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceAfter" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BackgroundThroughSpacing" type="BackgroundThroughSpacingEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithNext" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithPrevious" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepTogether" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BreakBefore" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BreakAfter" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalPosition" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Orphans" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Widows" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="NextCaseCorrection" type="NextCaseCorrectionEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="IgnoreCaseCorrection" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Align" type="AlignEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Text alignment
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LeftIndent" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="RightIndent" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="FirstIndent" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LineSpacing" type="LineSpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link LineSpacing} allows to adjust line height based on selected
+{@link LineSpacingType}.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Tabs" type="TabsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									List of tab stops
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="NextStyle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AllowVerticalTruncation" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Role" type="RoleTypeEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Wrap" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Direction" type="TextDirectionEnumType" minOccurs="0" maxOccurs="1"/>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="SpanStyle" type="SpanStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Span}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

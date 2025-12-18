@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Margin" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Padding" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Border" schemaLocation="../style/proptypes/Borders.xsd"/>
+	<xs:include id="SpaceBefore" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="SpaceAfter" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="BackgroundThroughSpacing" schemaLocation="../style/proptypes/BackgroundThroughSpacingEnum.xsd"/>
+	<xs:include id="VerticalAlignment" schemaLocation="../style/proptypes/AlignmentEnum.xsd"/>
+	<xs:include id="Role" schemaLocation="../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="ContainerStyle" schemaLocation="../style/ContainerStyle.xsd"/> <!-- Child -->
+  		<xs:complexType name="CellStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Margin" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Padding" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Border" type="BordersType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Rectangular element border definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceBefore" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceAfter" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BackgroundThroughSpacing" type="BackgroundThroughSpacingEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="VerticalAlignment" type="AlignmentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment. Can be used both for horizontal or vertical
+alignment properties.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Role" type="RoleTypeEnumType" minOccurs="0" maxOccurs="1"/>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="ContainerStyle" type="ContainerStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Container}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="ContentElement" schemaLocation="./ContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="DataUri" schemaLocation="./part/ref/DataUri.xsd"/>
+	<xs:include id="Alt" schemaLocation="./Script.xsd"/>
+	<xs:include id="InlineImageData" schemaLocation="./ForeignNamespaceObject.xsd"/>
+	<xs:include id="InlineImageParams" schemaLocation="./style/proptypes/InlineImageParams.xsd"/>
+  		<xs:complexType name="AbstractImageType" abstract="true">
+			<xs:complexContent>
+	  			<xs:extension base="ContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="DataUri" type="DataUriType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Container class for DataUri property
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Alt" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="InlineImageData" type="ForeignNamespaceObjectType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The inline image data. The content of this element is defined by the image type,
+it may be a base64 encoded binary, or an XML in any namespace.
+TONIC defines two such image types and corresponding namespaces - de.kwsoft.mtext.tonic.barcode is used for barcodes
+and urn:kwsoft:mtext:tonic:charts is used for charts.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="InlineImageParams" type="InlineImageParamsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Container for individual image parameters.
+Parameters can be used to e.g. pass a value to be printed to a barcode definition.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+					<xs:attribute name="uri" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								The URI of the image data.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="type" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Optional type of the image, defining what handler classes should be used
+for editing and rendering the image content (for example,
+type="de.kwsoft.mtext.dom.Barcode").
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

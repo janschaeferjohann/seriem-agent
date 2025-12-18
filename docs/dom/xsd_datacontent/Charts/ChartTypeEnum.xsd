@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="ChartTypeEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="xy" />
+	 	<xs:enumeration value="area" />
+	 	<xs:enumeration value="pie" />
+	 	<xs:enumeration value="donut" />
+	 	<xs:enumeration value="bar" />
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

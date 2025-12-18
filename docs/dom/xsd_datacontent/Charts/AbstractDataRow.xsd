@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified">
+  		<xs:complexType name="AbstractDataRowType" abstract="true">
+					<xs:attribute name="name" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								A localizable string has a default value and can have translations of that default value
+to various languages. The object is used for UI contributions. When constructing the UI,
+the best match language variant is used. The default is used if there is no matching variant.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+                    <xs:anyAttribute namespace="##local" processContents="skip"/>
+		</xs:complexType>
+</xs:schema>

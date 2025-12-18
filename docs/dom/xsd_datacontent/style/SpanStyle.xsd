@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Margin" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Padding" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Border" schemaLocation="../style/proptypes/Borders.xsd"/>
+	<xs:include id="SpaceBefore" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="SpaceAfter" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="BackgroundThroughSpacing" schemaLocation="../style/proptypes/BackgroundThroughSpacingEnum.xsd"/>
+	<xs:include id="FontFamily" schemaLocation="../style/proptypes/FontFamily.xsd"/>
+	<xs:include id="NextCaseCorrection" schemaLocation="../style/proptypes/NextCaseCorrectionEnum.xsd"/>
+	<xs:include id="Language" schemaLocation="../Language.xsd"/>
+	<xs:include id="DecimalFormats" schemaLocation="../style/proptypes/DecimalFormatSymbols.xsd"/>
+	<xs:include id="Role" schemaLocation="../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="PageNumberFormat" schemaLocation="../style/proptypes/numbering/NumberingFormatEnum.xsd"/>
+	<xs:include id="PageCountFormat" schemaLocation="../style/proptypes/numbering/NumberingFormatEnum.xsd"/>
+	<xs:include id="Direction" schemaLocation="../style/proptypes/TextDirectionEnum.xsd"/>
+  		<xs:complexType name="SpanStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Margin" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Padding" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Border" type="BordersType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Rectangular element border definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceBefore" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceAfter" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BackgroundThroughSpacing" type="BackgroundThroughSpacingEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="FontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="FontFamily" type="FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="FontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="TextColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BaseFontSize" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="CharHeight" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="NextCaseCorrection" type="NextCaseCorrectionEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="IgnoreCaseCorrection" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Hyphenation" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Spellchecking" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Language" type="LanguageType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Replacement of java.lang.Locale which is not supported by GWT.
+This class uses the same language/country/variant structure as java.lang.Locale.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="DecimalFormats" type="DecimalFormatSymbolsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Decimal and thousands grouping separator character definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="ReduceMultipleBlanks" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Role" type="RoleTypeEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="HyperlinkUnderline" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="HyperlinkColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Wrap" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="MarkerName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 			    <xs:element name="PageNumberPattern" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                  <xs:extension base="xs:string">
+                                      <xs:anyAttribute namespace="##local" processContents="skip"/>
+                                  </xs:extension>                            
+                                </xs:simpleContent>
+                            </xs:complexType>
+		 			    </xs:element>
+		 				<xs:element name="PageNumberFormat" type="NumberingFormatEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Defines supported numbering formats.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 			    <xs:element name="PageCountPattern" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                  <xs:extension base="xs:string">
+                                      <xs:anyAttribute namespace="##local" processContents="skip"/>
+                                  </xs:extension>                            
+                                </xs:simpleContent>
+                            </xs:complexType>
+		 			    </xs:element>
+		 				<xs:element name="PageCountFormat" type="NumberingFormatEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Defines supported numbering formats.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Hidden" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Direction" type="TextDirectionEnumType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence> 
+                    <xs:anyAttribute namespace="##local" processContents="skip"/>
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

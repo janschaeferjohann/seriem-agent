@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="ContentElement" schemaLocation="./ContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Style" schemaLocation="./style/NumberingStyle.xsd"/>
+  		<xs:complexType name="NumberingType" >
+			<xs:complexContent>
+	  			<xs:extension base="ContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="Style" type="NumberingStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Numbering}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

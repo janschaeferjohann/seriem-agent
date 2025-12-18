@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="LegendPositionEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="none">
+	 	<xs:annotation><xs:documentation>Do not show the legend at all</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="outside_right" />
+	 	<xs:enumeration value="outside_bottom" />
+	 	<xs:enumeration value="inside_top" />
+	 	<xs:enumeration value="inside_top_left" />
+	 	<xs:enumeration value="inside_top_right" />
+	 	<xs:enumeration value="inside_bottom" />
+	 	<xs:enumeration value="inside_bottom_left" />
+	 	<xs:enumeration value="inside_bottom_right" />
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

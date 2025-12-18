@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="ContainerPart" schemaLocation="./part/ContainerPart.xsd"/>
+	<xs:include id="ParPart" schemaLocation="./part/ParPart.xsd"/>
+	<xs:element name="ContainerPart" type="ContainerPartType">
+		<xs:annotation>
+  			<xs:documentation>
+  				Container part.
+  			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ParPart" type="ParPartType">
+		<xs:annotation>
+  			<xs:documentation>
+  				Paragraph part.
+  			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

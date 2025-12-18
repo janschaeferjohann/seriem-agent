@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="ContentElement" schemaLocation="./ContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Hyperlink" schemaLocation="./Script.xsd"/>
+	<xs:include id="Alt" schemaLocation="./Script.xsd"/>
+	<xs:include id="Style" schemaLocation="./style/SpanStyle.xsd"/>
+	<xs:include id="Data" schemaLocation="./Data.xsd"/> <!-- Child -->
+	<xs:include id="Text" schemaLocation="./Text.xsd"/> <!-- Child -->
+  		<xs:complexType name="SpanType" >
+			<xs:complexContent>
+	  			<xs:extension base="ContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="Hyperlink" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Alt" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Style" type="SpanStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Span}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="Data" type="DataType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											A reference to a data node contained in a span.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Text" type="TextType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											A chunk of plain text contained in a span.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

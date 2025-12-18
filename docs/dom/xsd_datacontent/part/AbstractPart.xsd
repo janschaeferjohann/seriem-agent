@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractElement" schemaLocation="../element/AbstractElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="VisibleIf" schemaLocation="../Script.xsd"/>
+	<xs:include id="Validation" schemaLocation="../Script.xsd"/>
+  		<xs:complexType name="AbstractPartType" abstract="true">
+			<xs:complexContent>
+	  			<xs:extension base="AbstractElementType"> 
+					<xs:sequence>
+		 				<xs:element name="VisibleIf" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Validation" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

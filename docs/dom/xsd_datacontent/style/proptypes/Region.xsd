@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="Left" schemaLocation="../../style/proptypes/RegionAnchor.xsd"/>
+	<xs:include id="Top" schemaLocation="../../style/proptypes/RegionAnchor.xsd"/>
+	<xs:include id="Right" schemaLocation="../../style/proptypes/RegionAnchor.xsd"/>
+	<xs:include id="Bottom" schemaLocation="../../style/proptypes/RegionAnchor.xsd"/>
+	<xs:include id="role" schemaLocation="../../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="contentRotation" schemaLocation="../../style/proptypes/RotationEnum.xsd"/>
+	<xs:include id="produceOnLastPage" schemaLocation="../../style/proptypes/RegionProduceOnLastPageEnum.xsd"/>
+	<xs:include id="lastPageScope" schemaLocation="../../marker/PageNumberScopeEnum.xsd"/>
+  		<xs:complexType name="RegionType" >
+					<xs:sequence>
+		 				<xs:element name="Left" type="RegionAnchorType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Anchor adjusting position of one of the four sides of a region. The anchor is
+an absolute value - position on paper, together with a side - the side
+defines to which paper side the distance applies. For example, when a
+{@link Region} has a property left = region anchor (5cm OPPOSITE), it means
+that the regions left side should be 5cm from the right edge of the paper.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Top" type="RegionAnchorType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Anchor adjusting position of one of the four sides of a region. The anchor is
+an absolute value - position on paper, together with a side - the side
+defines to which paper side the distance applies. For example, when a
+{@link Region} has a property left = region anchor (5cm OPPOSITE), it means
+that the regions left side should be 5cm from the right edge of the paper.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Right" type="RegionAnchorType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Anchor adjusting position of one of the four sides of a region. The anchor is
+an absolute value - position on paper, together with a side - the side
+defines to which paper side the distance applies. For example, when a
+{@link Region} has a property left = region anchor (5cm OPPOSITE), it means
+that the regions left side should be 5cm from the right edge of the paper.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Bottom" type="RegionAnchorType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Anchor adjusting position of one of the four sides of a region. The anchor is
+an absolute value - position on paper, together with a side - the side
+defines to which paper side the distance applies. For example, when a
+{@link Region} has a property left = region anchor (5cm OPPOSITE), it means
+that the regions left side should be 5cm from the right edge of the paper.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+	       			<xs:attribute name="name" type="xs:string" use="optional"/>
+	       			<xs:attribute name="role" type="RoleTypeEnumType" use="optional"/>
+					<xs:attribute name="contentRotation" type="RotationEnumType" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Enumeration of the possible rotation of the region content.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	       			<xs:attribute name="produceOnLastPage" type="RegionProduceOnLastPageEnumType" use="optional"/>
+	       			<xs:attribute name="lastPageScope" type="PageNumberScopeEnumType" use="optional"/>
+		</xs:complexType>
+</xs:schema>

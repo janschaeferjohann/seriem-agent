@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="NonLeafContentElement" schemaLocation="./NonLeafContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Style" schemaLocation="./style/ContainerStyle.xsd"/>
+	<xs:include id="Container" schemaLocation="./Container.xsd"/> <!-- Child -->
+	<xs:include id="Image" schemaLocation="./Image.xsd"/> <!-- Child -->
+	<xs:include id="Numbering" schemaLocation="./Numbering.xsd"/> <!-- Child -->
+	<xs:include id="Par" schemaLocation="./Par.xsd"/> <!-- Child -->
+	<xs:include id="Table" schemaLocation="./Table.xsd"/> <!-- Child -->
+  		<xs:complexType name="ContainerType" >
+			<xs:complexContent>
+	  			<xs:extension base="NonLeafContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="Style" type="ContainerStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Container}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="Container" type="ContainerType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											A container of flowing document content. Containers can be either stacked
+with other content in a parent container, or positioned absolutely on the
+page in a predefined region, static containers can only be positioned
+absolutely on the page in a predefined region. When formatting for paged
+media, containers start on a page they first appear, and may span multiple
+pages.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Image" type="ImageType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Bitmap or vector image, or a custom pluggable image-like content (for example
+barcode, OMR marks, dynamic chart...). Can be either stacked with other
+content in the parent container, or positioned absolutely on the page in a
+predefined region. Defines either an URI to external image data using
+{@code uri} property, or embeds the image data. Can have a {@code type}
+property that defines what handler classes should be used for editing and
+rendering the image content (for example,
+type="de.kwsoft.mtext.dom.Barcode"). The embedded inline image data may
+either be a base64 encoded binary, or an XML in any other namespace (for
+example xmlns="http://www.w3.org/2000/svg").
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Numbering" type="NumberingType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Defines a numbering collection.
+
+Paragraphs which participate in this numbering collection refer to it using its identifier (attribute "id").
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Par" type="ParType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											A paragraph of content. Consists of one or more spans.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Table" type="TableType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Defines a table. A table consists of rows. In addition, a table can contain
+a definition of a table header, table footer and table columns.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="AlignmentInParentEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="first">
+	 	<xs:annotation><xs:documentation>Align to the left in horizontal direction or to the top in vertical direction.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="center">
+	 	<xs:annotation><xs:documentation>Center the object in the available space.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="last">
+	 	<xs:annotation><xs:documentation>Align to the right in horizontal direction or to the bottom in vertical direction.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

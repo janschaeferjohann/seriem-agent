@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="RotationEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="0">
+	 	<xs:annotation><xs:documentation>No rotation.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="90">
+	 	<xs:annotation><xs:documentation>Counterclockwise 90 degrees.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="180">
+	 	<xs:annotation><xs:documentation>Counterclockwise 180 degrees.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="270">
+	 	<xs:annotation><xs:documentation>Counterclockwise 270 degrees.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

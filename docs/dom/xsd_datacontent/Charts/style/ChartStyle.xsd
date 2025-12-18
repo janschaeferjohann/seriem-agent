@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified" xmlns:dom="urn:kwsoft:mtext:tonic:dom">
+	<!-- Extends -->
+	<xs:import id="AbstractStyle" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:import id="DefaultFontFamily" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/proptypes/FontFamily.xsd"/>
+	<xs:import id="TitleFontFamily" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/proptypes/FontFamily.xsd"/>
+	<xs:include id="LegendPosition" schemaLocation="../style/proptypes/LegendPositionEnum.xsd"/>
+	<xs:import id="LegendFontFamily" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/proptypes/FontFamily.xsd"/>
+	<xs:import id="AxisLabelFontFamily" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/proptypes/FontFamily.xsd"/>
+	<xs:import id="AxisTicksFontFamily" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../../style/proptypes/FontFamily.xsd"/>
+	<xs:include id="AxisShowAllValues" schemaLocation="../style/proptypes/AxisEnum.xsd"/>
+  		<xs:complexType name="ChartStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="dom:AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="TitleVisible" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="DefaultFontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="DefaultFontFamily" type="dom:FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="DefaultFontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="DefaultTextColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="GridColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="PlotBorderColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="TitleFontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="TitleFontFamily" type="dom:FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="TitleFontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="TitleColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="LegendPosition" type="LegendPositionEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Position of the chart legend
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LegendFontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LegendFontFamily" type="dom:FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LegendFontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="LegendTextColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="LegendBackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="LegendBorderColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisLabelVisible" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisLabelFontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisLabelFontFamily" type="dom:FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisLabelFontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisLabelTextColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisTickMarksVisible" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisTicksFontSize" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontSize} carries font size value.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisTicksFontFamily" type="dom:FontFamilyType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontFamily} carries font family name.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisTicksFontStyle" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link FontStyleValue} carries font style in integer representation.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="AxisTicksTextColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisXTicksRotation" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisLineColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="AxisShowAllValues" type="AxisEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Enumeration of chart axis types
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="DonutThickness" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="PlotColors" minOccurs="0" maxOccurs="1">
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element type="xs:string" name="PlotColor" maxOccurs="unbounded" minOccurs="0"/>
+                            </xs:sequence>
+                          </xs:complexType>
+                        </xs:element>                    
+                        <xs:element name="PlotMarkerTypes" minOccurs="0" maxOccurs="1">
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element type="xs:string" name="PlotMarkerType" maxOccurs="unbounded" minOccurs="0"/>
+                            </xs:sequence>
+                          </xs:complexType>
+                        </xs:element>                    
+					</xs:sequence>
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+  		<xs:complexType name="DecimalFormatSymbolsType" >
+	       			<xs:attribute name="decimalSeparator" type="xs:string" use="optional"/>
+	       			<xs:attribute name="groupingSeparator" type="xs:string" use="optional"/>
+		</xs:complexType>
+</xs:schema>

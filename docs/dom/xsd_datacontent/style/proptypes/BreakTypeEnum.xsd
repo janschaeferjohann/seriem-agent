@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="BreakTypeEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="none">
+	 	<xs:annotation><xs:documentation>Do not care</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="page">
+	 	<xs:annotation><xs:documentation>Produce a page break if current page is not empty</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="page_forced">
+	 	<xs:annotation><xs:documentation>Produce a page break even if current page is empty</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="column">
+	 	<xs:annotation><xs:documentation>Produce a new column in a multiple column container formatting.
+Ignored if the container has a single column.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

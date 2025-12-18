@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="SpacingResolutionEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="combine" />
+	 	<xs:enumeration value="overwrite" />
+	 	<xs:enumeration value="bigger" />
+	 	<xs:enumeration value="smaller" />
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

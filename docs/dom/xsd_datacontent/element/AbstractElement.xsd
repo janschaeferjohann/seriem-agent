@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="Comments" schemaLocation="../element/ItemList.xsd"/>
+  		<xs:complexType name="AbstractElementType" abstract="true">
+					<xs:sequence>
+		 				<xs:element name="Comments" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Immutable list of generic items.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+					<xs:attribute name="id" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								An optional element ID, used in scripting and for defining child styles
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+		</xs:complexType>
+</xs:schema>

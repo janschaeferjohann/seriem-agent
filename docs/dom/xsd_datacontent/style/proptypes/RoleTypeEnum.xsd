@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="RoleTypeEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="part" />
+	 	<xs:enumeration value="art" />
+	 	<xs:enumeration value="sect" />
+	 	<xs:enumeration value="div" />
+	 	<xs:enumeration value="blockquote" />
+	 	<xs:enumeration value="caption" />
+	 	<xs:enumeration value="p" />
+	 	<xs:enumeration value="h" />
+	 	<xs:enumeration value="h1" />
+	 	<xs:enumeration value="h2" />
+	 	<xs:enumeration value="h3" />
+	 	<xs:enumeration value="h4" />
+	 	<xs:enumeration value="h5" />
+	 	<xs:enumeration value="h6" />
+	 	<xs:enumeration value="table" />
+	 	<xs:enumeration value="th" />
+	 	<xs:enumeration value="tf" />
+	 	<xs:enumeration value="tb" />
+	 	<xs:enumeration value="td" />
+	 	<xs:enumeration value="thc" />
+	 	<xs:enumeration value="thr" />
+	 	<xs:enumeration value="thb" />
+	 	<xs:enumeration value="figure" />
+	 	<xs:enumeration value="span" />
+	 	<xs:enumeration value="quote" />
+	 	<xs:enumeration value="note" />
+	 	<xs:enumeration value="reference" />
+	 	<xs:enumeration value="code" />
+	 	<xs:enumeration value="link" />
+	 	<xs:enumeration value="annot" />
+	 	<xs:enumeration value="artifact" />
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

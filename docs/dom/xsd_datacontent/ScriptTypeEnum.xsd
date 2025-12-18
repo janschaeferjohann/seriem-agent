@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="ScriptTypeEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="default">
+	 	<xs:annotation><xs:documentation>The default, non-restricted JavaScript, executed by {@link ExpressionExecutor}</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="datanoderef">
+	 	<xs:annotation><xs:documentation>Simple data node reference, in the form $[.]*[.instance()], executed by {@link DataNodeExpressionExecutor}</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="string">
+	 	<xs:annotation><xs:documentation>Just a string which will be used as is as the result of the "script evaluation"</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

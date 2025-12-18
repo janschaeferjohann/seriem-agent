@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="Footer" schemaLocation="../../Footer.xsd"/>
+	<!-- List -->	
+	<xs:complexType name="FooterListType">
+    	<xs:sequence minOccurs="0" maxOccurs="unbounded">
+     		<xs:choice>
+    			<xs:element name="Footer" type="FooterType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+  						<xs:documentation>
+  						Represents table footer. When formatting for paged media, the table header is
+printed at the bottom of each page the table is formatted to.
+  						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+    		</xs:choice>
+     	</xs:sequence>
+  	</xs:complexType>
+	<!-- /List -->	
+</xs:schema>

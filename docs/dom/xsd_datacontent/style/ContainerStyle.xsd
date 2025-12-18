@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Margin" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Padding" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Border" schemaLocation="../style/proptypes/Borders.xsd"/>
+	<xs:include id="SpaceBefore" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="SpaceAfter" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="BackgroundThroughSpacing" schemaLocation="../style/proptypes/BackgroundThroughSpacingEnum.xsd"/>
+	<xs:include id="BreakBefore" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="BreakAfter" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="VerticalPosition" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="Region" schemaLocation="../style/proptypes/Region.xsd"/>
+	<xs:include id="ColumnsDefinition" schemaLocation="../style/proptypes/ColumnsDefinition.xsd"/>
+	<xs:include id="Role" schemaLocation="../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="VerticalOverflow" schemaLocation="../style/proptypes/VerticalOverflowEnum.xsd"/>
+	<xs:include id="HorizontalOverflow" schemaLocation="../style/proptypes/HorizontalOverflowEnum.xsd"/>
+	<xs:include id="ContentRotation" schemaLocation="../style/proptypes/RotationEnum.xsd"/>
+	<xs:include id="VerticalAlignment" schemaLocation="../style/proptypes/AlignmentEnum.xsd"/>
+	<xs:include id="HorizontalPosition" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="ContainerStyle" schemaLocation="../style/ContainerStyle.xsd"/> <!-- Child -->
+	<xs:include id="ImageStyle" schemaLocation="../style/ImageStyle.xsd"/> <!-- Child -->
+	<xs:include id="NumberingStyle" schemaLocation="../style/NumberingStyle.xsd"/> <!-- Child -->
+	<xs:include id="ParStyle" schemaLocation="../style/ParStyle.xsd"/> <!-- Child -->
+	<xs:include id="TableStyle" schemaLocation="../style/TableStyle.xsd"/> <!-- Child -->
+  		<xs:complexType name="ContainerStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Margin" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Padding" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Border" type="BordersType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Rectangular element border definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceBefore" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceAfter" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BackgroundThroughSpacing" type="BackgroundThroughSpacingEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithNext" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithPrevious" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepTogether" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BreakBefore" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BreakAfter" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalPosition" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="RegionRef" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Region" type="RegionType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									A page region definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="ColumnsDefinition" type="ColumnsDefinitionType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Container for an individual {@link ColumnDefinition}s.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Role" type="RoleTypeEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Height" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element size (currently used for element height) with a few special values
+
+AUTO - act as if the element size was not set at all, i.e. use the content height
+FILL - fill all the available space (all that remains in a parent which has an absolute height,
+or all that remains in the current region if there is no such parent).
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalOverflow" type="VerticalOverflowEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Handling of vertical overflow
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="HorizontalOverflow" type="HorizontalOverflowEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									{@link HorizontalOverflow} defines behaviour in case of a horizontal overflow
+of content in element with a fixed width
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="ContentRotation" type="RotationEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Enumeration of the possible rotation of the region content.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalAlignment" type="AlignmentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment. Can be used both for horizontal or vertical
+alignment properties.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="HorizontalPosition" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="ContainerStyle" type="ContainerStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Container}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="ImageStyle" type="ImageStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Image}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NumberingStyle" type="NumberingStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Numbering}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="ParStyle" type="ParStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Par}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="TableStyle" type="TableStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Table}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

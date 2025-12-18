@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="Left" schemaLocation="../../style/proptypes/LineStyle.xsd"/>
+	<xs:include id="Top" schemaLocation="../../style/proptypes/LineStyle.xsd"/>
+	<xs:include id="Right" schemaLocation="../../style/proptypes/LineStyle.xsd"/>
+	<xs:include id="Bottom" schemaLocation="../../style/proptypes/LineStyle.xsd"/>
+  		<xs:complexType name="BordersType" >
+					<xs:sequence>
+		 				<xs:element name="Left" type="LineStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style of a (border) line - its width, color and type
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Top" type="LineStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style of a (border) line - its width, color and type
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Right" type="LineStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style of a (border) line - its width, color and type
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Bottom" type="LineStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style of a (border) line - its width, color and type
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+		</xs:complexType>
+</xs:schema>

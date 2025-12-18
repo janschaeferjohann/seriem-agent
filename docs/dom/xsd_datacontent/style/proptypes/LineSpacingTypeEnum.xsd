@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="LineSpacingTypeEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="proportional">
+	 	<xs:annotation><xs:documentation>Line spacing is given as a proportion of its highest font.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="at_least">
+	 	<xs:annotation><xs:documentation>Given value is ensured as a minimal spacing between two lines. Spacing
+can be exceeded if the largest font in line is a higher than given value.
+
+
+Given spacing is a combination of the largest font and additional space
+which is added to to reach the final spacing value.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="leading">
+	 	<xs:annotation><xs:documentation>Fixed spacing which is added as leading space to the height of the
+largest font in each line.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="fixed">
+	 	<xs:annotation><xs:documentation>Fixed spacing to be used in each line, regardless of fonts used in it.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

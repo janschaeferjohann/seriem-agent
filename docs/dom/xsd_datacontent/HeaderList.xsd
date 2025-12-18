@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="Header" schemaLocation="../../Header.xsd"/>
+	<!-- List -->	
+	<xs:complexType name="HeaderListType">
+    	<xs:sequence minOccurs="0" maxOccurs="unbounded">
+     		<xs:choice>
+    			<xs:element name="Header" type="HeaderType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+  						<xs:documentation>
+  						Represents table header. When formatting for paged media, the table header is
+printed on top of each page the table is formatted to.
+  						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+    		</xs:choice>
+     	</xs:sequence>
+  	</xs:complexType>
+	<!-- /List -->	
+</xs:schema>

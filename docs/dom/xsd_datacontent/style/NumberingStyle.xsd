@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Levels" schemaLocation="../style/proptypes/numbering/Levels.xsd"/>
+	<xs:include id="ParStyle" schemaLocation="../style/ParStyle.xsd"/> <!-- Child -->
+  		<xs:complexType name="NumberingStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Levels" type="LevelsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Container for {@link Level}s - defines numbering style
+properties for one or more numbering levels.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="ParStyle" type="ParStyleType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Style for {@link Par}
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

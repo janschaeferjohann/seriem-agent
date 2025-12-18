@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractDataRow" schemaLocation="./AbstractDataRow.xsd"/>
+	<!-- /Extends -->
+  		<xs:complexType name="AbstractStaticDataRowType" abstract="true">
+			<xs:complexContent>
+	  			<xs:extension base="AbstractDataRowType"> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="VerticalOverflowEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="default">
+	 	<xs:annotation><xs:documentation>Do whatever is the default for the element
+For a static container: produce a formatting error
+For a non static container: produce a page break and continue in at the next page</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="error">
+	 	<xs:annotation><xs:documentation>Produce a formatting error</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="truncate">
+	 	<xs:annotation><xs:documentation>Truncate the element</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="grow">
+	 	<xs:annotation><xs:documentation>Allow the container to grow beyond its fixed height. When reaching the region height, the behavior is the same as in DEFAULT.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="type" schemaLocation="../../style/proptypes/LineSpacingTypeEnum.xsd"/>
+  		<xs:complexType name="LineSpacingType" >
+					<xs:attribute name="type" type="LineSpacingTypeEnumType" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								{@link LineSpacingType} offers various line spacing types.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="value" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Stores a distance together with its unit.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+		</xs:complexType>
+</xs:schema>

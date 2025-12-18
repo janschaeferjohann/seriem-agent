@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="resolution" schemaLocation="../../style/proptypes/SpacingResolutionEnum.xsd"/>
+		<xs:complexType name="SpacingType">
+      		<xs:simpleContent>
+         		<xs:extension base="xs:string">
+					<xs:attribute name="resolution" type="SpacingResolutionEnumType" use="optional"/>
+         		</xs:extension>
+      		</xs:simpleContent>
+   		</xs:complexType>
+</xs:schema>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractElement" schemaLocation="./element/AbstractElement.xsd"/>
+	<!-- /Extends -->
+  		<xs:complexType name="ContentElementType" abstract="true">
+			<xs:complexContent>
+	  			<xs:extension base="AbstractElementType"> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

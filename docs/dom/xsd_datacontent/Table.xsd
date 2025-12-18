@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="NonLeafContentElement" schemaLocation="./NonLeafContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Headers" schemaLocation="./HeaderList.xsd"/>
+	<xs:include id="Footers" schemaLocation="./FooterList.xsd"/>
+	<xs:include id="Columns" schemaLocation="./element/ElementList.xsd"/>
+	<xs:include id="Style" schemaLocation="./style/TableStyle.xsd"/>
+	<xs:include id="Row" schemaLocation="./Row.xsd"/> <!-- Child -->
+  		<xs:complexType name="TableType" >
+			<xs:complexContent>
+	  			<xs:extension base="NonLeafContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="Headers" type="HeaderListType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Default {@link ElementList} implementation, uses {@link List} to store the elements.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Footers" type="FooterListType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Default {@link ElementList} implementation, uses {@link List} to store the elements.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Columns" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Immutable list of document elements.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Style" type="TableStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Table}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+								<xs:element name="Row" type="RowType"> <!-- Child -->
+									<xs:annotation>
+  										<xs:documentation>
+  											Table row.
+  										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

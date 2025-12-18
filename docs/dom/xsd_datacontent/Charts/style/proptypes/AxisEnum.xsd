@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="AxisEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="none" />
+	 	<xs:enumeration value="x" />
+	 	<xs:enumeration value="y" />
+	 	<xs:enumeration value="both" />
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

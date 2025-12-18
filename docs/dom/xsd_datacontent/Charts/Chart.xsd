@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:charts" targetNamespace="urn:kwsoft:mtext:tonic:charts" elementFormDefault="qualified" xmlns:dom="urn:kwsoft:mtext:tonic:dom">
+	<!-- Extends -->
+	<xs:import id="ContentElement" namespace="urn:kwsoft:mtext:tonic:dom" schemaLocation="../ContentElement.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Style" schemaLocation="./style/ChartStyle.xsd"/>
+	<xs:include id="DataSeries" schemaLocation="./DataSeries.xsd"/> <!-- Child -->
+	<xs:include id="chartType" schemaLocation="./ChartTypeEnum.xsd"/>
+  		<xs:complexType name="ChartType" >
+			<xs:complexContent>
+	  			<xs:extension base="dom:ContentElementType"> 
+					<xs:sequence>
+		 				<xs:element name="Style" type="ChartStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Chart}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		 					<xs:choice minOccurs="0">
+		  						<xs:element name="DataSeries" type="DataSeriesType"/> <!-- Child -->
+		 					</xs:choice>
+						</xs:sequence>
+					</xs:sequence>
+					<xs:attribute name="width" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Stores a distance together with its unit.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="height" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Stores a distance together with its unit.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	       			<xs:attribute name="chartType" type="ChartTypeEnumType" use="optional"/>
+					<xs:attribute name="name" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								A localizable string has a default value and can have translations of that default value
+to various languages. The object is used for UI contributions. When constructing the UI,
+the best match language variant is used. The default is used if there is no matching variant.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="language" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Replacement of java.lang.Locale which is not supported by GWT.
+This class uses the same language/country/variant structure as java.lang.Locale.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+                    <xs:anyAttribute namespace="##local" processContents="skip"/>
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

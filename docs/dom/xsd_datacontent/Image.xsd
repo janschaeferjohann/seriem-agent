@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractImage" schemaLocation="./AbstractImage.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Hyperlink" schemaLocation="./Script.xsd"/>
+	<xs:include id="Style" schemaLocation="./style/ImageStyle.xsd"/>
+  		<xs:complexType name="ImageType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractImageType"> 
+					<xs:sequence>
+		 				<xs:element name="Hyperlink" type="ScriptType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Represents a piece of script within the document.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Style" type="ImageStyleType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Style for {@link Image}
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

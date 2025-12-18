@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="StretchEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="original_size">
+	 	<xs:annotation><xs:documentation>Use original image size, align or downscale the image if width and/or height is set in the style.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="keep_aspect_ratio">
+	 	<xs:annotation><xs:documentation>Keep aspect ratio of the image. If only width is set in the style, height will be computed
+to maintain the aspect ratio and vice versa. If both width and height is set, 
+scale the image so that it fits and align it within the other dimension 
+(e.g. original size 10cm x 5cm, image width 15cm, image height 20cm will upscale the image
+to the 15cm width and align it vertically in the 20cm space.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="scale_to_fill">
+	 	<xs:annotation><xs:documentation>Scale the image to fill the entire area given by width and height in the style.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

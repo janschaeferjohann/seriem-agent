@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="TableFooterOccurrenceEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="all">
+	 	<xs:annotation><xs:documentation>Include the footer on all pages the table spans.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="last">
+	 	<xs:annotation><xs:documentation>Include the footer only on the page the table ends at.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="all_but_last">
+	 	<xs:annotation><xs:documentation>Include the footer on all pages the table spans, except the page where the table ends.</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>

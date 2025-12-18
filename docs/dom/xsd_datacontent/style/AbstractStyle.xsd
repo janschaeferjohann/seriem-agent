@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+  		<xs:complexType name="AbstractStyleType" abstract="true">
+	       			<xs:attribute name="name" type="xs:string" use="optional"/>
+					<xs:attribute name="title" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								A localizable string has a default value and can have translations of that default value
+to various languages. The object is used for UI contributions. When constructing the UI,
+the best match language variant is used. The default is used if there is no matching variant.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	       			<xs:attribute name="parentName" type="xs:string" use="optional"/>
+					<xs:attribute name="hideInEditor" type="xs:boolean" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Do not show the style in the style selection in the end-users editor.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	       			<xs:attribute name="index" type="xs:string" use="optional"/>
+	       			<xs:attribute name="id" type="xs:string" use="optional"/>
+	       			<xs:attribute name="numberingLevel" type="xs:string" use="optional"/>
+                    <xs:anyAttribute namespace="##local" processContents="skip"/>
+		</xs:complexType>
+</xs:schema>

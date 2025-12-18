@@ -1,0 +1,17 @@
+# Description
+The next task is to create another subagent for generating testcases.
+
+## Main Agent - Subagent Communication
+
+The main agent will handover the task to create a testcase xml to the subagent. 
+The subagent will call the necessary tools to create that xml and respond with that content to the main agent. the main agent will carry out the edit or create operation. Testcases have file ending .xml
+
+## Subagent tools
+The subagent will be able to read files, e.g. an existing testcase or a datamodel. Based on that file and the user instructions it will generate the testcase.
+
+## Detailed information
+
+For more information and a previous prompt (can be improved) please refer to:
+
+- /docs/cookbook/testcase_from_datamodel.ipynb
+- /docs/cookbook/testcase_from_existing.ipynb

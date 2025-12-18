@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="style" schemaLocation="../../style/proptypes/LineTypeEnum.xsd"/>
+  		<xs:complexType name="LineStyleType" >
+					<xs:attribute name="width" type="xs:string" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Stores a distance together with its unit.
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+	       			<xs:attribute name="color" type="xs:string" use="optional"/>
+					<xs:attribute name="style" type="LineTypeEnumType" use="optional">
+						<xs:annotation>
+  							<xs:documentation>
+  								Enumeration of various line types
+  							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+		</xs:complexType>
+</xs:schema>

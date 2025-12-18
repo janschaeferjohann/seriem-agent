@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<xs:include id="type" schemaLocation="../../ScriptTypeEnum.xsd"/>
+	<xs:include id="ifNotExist" schemaLocation="../../part/ref/IfNotExistEnum.xsd"/>
+		<xs:complexType name="DataUriType">
+      		<xs:simpleContent>
+         		<xs:extension base="xs:string">
+					<xs:attribute name="hash" type="xs:string" use="optional"/>
+					<xs:attribute name="type" type="ScriptTypeEnumType" use="optional"/>
+					<xs:attribute name="ifNotExist" type="IfNotExistEnumType" use="optional"/>
+					<xs:attribute name="alternativeUri" type="xs:string" use="optional"/>
+         		</xs:extension>
+      		</xs:simpleContent>
+   		</xs:complexType>
+</xs:schema>

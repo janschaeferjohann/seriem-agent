@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	<!-- Extends -->
+	<xs:include id="AbstractStyle" schemaLocation="../style/AbstractStyle.xsd"/>
+	<!-- /Extends -->
+	<xs:include id="Margin" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Padding" schemaLocation="../style/proptypes/Indents.xsd"/>
+	<xs:include id="Border" schemaLocation="../style/proptypes/Borders.xsd"/>
+	<xs:include id="SpaceBefore" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="SpaceAfter" schemaLocation="../style/proptypes/Spacing.xsd"/>
+	<xs:include id="BackgroundThroughSpacing" schemaLocation="../style/proptypes/BackgroundThroughSpacingEnum.xsd"/>
+	<xs:include id="BreakBefore" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="BreakAfter" schemaLocation="../style/proptypes/BreakTypeEnum.xsd"/>
+	<xs:include id="VerticalPosition" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="Stretch" schemaLocation="../style/proptypes/StretchEnum.xsd"/>
+	<xs:include id="VerticalAlignment" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="HorizontalAlignment" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+	<xs:include id="Role" schemaLocation="../style/proptypes/RoleTypeEnum.xsd"/>
+	<xs:include id="WrapText" schemaLocation="../style/proptypes/WrapTextEnum.xsd"/>
+	<xs:include id="HorizontalPosition" schemaLocation="../style/proptypes/AlignmentInParentEnum.xsd"/>
+  		<xs:complexType name="ImageStyleType" >
+			<xs:complexContent>
+	  			<xs:extension base="AbstractStyleType"> 
+					<xs:sequence>
+		 				<xs:element name="AdditionalCssClasses" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BackgroundColor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Margin" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Padding" type="IndentsType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Collection of top, right, bottom and left indents. Used as property type for
+an element margin and padding.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Border" type="BordersType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Rectangular element border definition
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceBefore" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="SpaceAfter" type="SpacingType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									The before/after spacing of an object.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BackgroundThroughSpacing" type="BackgroundThroughSpacingEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithNext" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepWithPrevious" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="KeepTogether" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="BreakBefore" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="BreakAfter" type="BreakTypeEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Type of the breakBefore/breakAfter page resp. column breaking info.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalPosition" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Width" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Height" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="FillContainerWidth" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="FillContainerHeight" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Stretch" type="StretchEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Image stretch option
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="VerticalAlignment" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="HorizontalAlignment" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="Role" type="RoleTypeEnumType" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="Hidden" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+		 				<xs:element name="WrapText" type="WrapTextEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Determines whether text is wrapped around or through an image.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="ShiftX" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="ShiftY" type="xs:string" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Stores a distance together with its unit.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+		 				<xs:element name="HorizontalPosition" type="AlignmentInParentEnumType" minOccurs="0" maxOccurs="1">
+		 					<xs:annotation>
+  								<xs:documentation>
+  									Element alignment within its parent.
+  								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence> 
+	   			</xs:extension> 
+	  		</xs:complexContent>
+		</xs:complexType>
+</xs:schema>

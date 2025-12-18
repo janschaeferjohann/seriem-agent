@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:kwsoft:mtext:tonic:simpledom" targetNamespace="urn:kwsoft:mtext:tonic:simpledom" elementFormDefault="qualified">
+	
+	<!-- Enum -->	
+	<xs:simpleType name="IfNotExistEnumType">
+	 <xs:restriction base="xs:string">
+	 	<xs:enumeration value="error">
+	 	<xs:annotation><xs:documentation>raise a formatting error, is the default</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="omit">
+	 	<xs:annotation><xs:documentation>do not produce the element (model call, image, attachment) containing the missing DataUri</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+	 	<xs:enumeration value="use_alternative">
+	 	<xs:annotation><xs:documentation>instead of the missing DataUri use the alternative Uri specified in the alternativeUri attribute</xs:documentation></xs:annotation>
+	 	</xs:enumeration>
+  	 </xs:restriction>
+	</xs:simpleType>
+	<!-- /Enum -->
+	
+</xs:schema>
