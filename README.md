@@ -32,7 +32,7 @@ venv\Scripts\activate  # Windows
 
 pip install -r requirements.txt
 cp env.example .env
-# Edit .env with your ANTHROPIC_API_KEY
+# Edit .env with your ANTHROPIC_API_KEY (never commit .env)
 
 uvicorn app.main:app --reload --port 8000
 ```
