@@ -10,8 +10,29 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from app.api.websocket import websocket_endpoint
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from backend/.env (explicit path for reliability)
+_backend_dir = Path(__file__).parent.parent
+_env_file = _backend_dir / ".env"
+load_dotenv(_env_file)
+
+# Debug: verify API key is loaded (prints at startup)
+_api_key = os.getenv("ANTHROPIC_API_KEY")
+if _api_key:
+    # Check for common issues
+    _stripped = _api_key.strip().strip('"').strip("'")
+    if _stripped != _api_key:
+        print(f"⚠ WARNING: API key has extra whitespace or quotes!")
+        print(f"  Raw length: {len(_api_key)}, Stripped length: {len(_stripped)}")
+        print(f"  Raw repr: {repr(_api_key[:20])}...")
+        # Use the cleaned version
+        os.environ["ANTHROPIC_API_KEY"] = _stripped
+        _api_key = _stripped
+        print(f"  Fixed: using stripped key")
+    print(f"✓ ANTHROPIC_API_KEY loaded ({len(_api_key)} chars)")
+    print(f"  Starts with: {_api_key[:15]}...")
+    print(f"  Ends with: ...{_api_key[-10:]}")
+else:
+    print(f"✗ ANTHROPIC_API_KEY not found! Check {_env_file}")
 
 # Ensure storage directory exists - default to project root's storage folder
 _default_storage = Path(__file__).parent.parent.parent / "storage"
