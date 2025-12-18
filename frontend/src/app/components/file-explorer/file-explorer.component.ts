@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { FileService, FileInfo, TreeNode } from '../../services/file.service';
+import { FileService, TreeNode } from '../../services/file.service';
+import { FilePreviewService } from '../../services/file-preview.service';
 
 @Component({
   selector: 'app-file-explorer',
@@ -279,7 +280,10 @@ export class FileExplorerComponent implements OnInit {
   // Computed signal for visible nodes
   visibleNodes = computed(() => this.fileService.getVisibleNodes());
   
-  constructor(public fileService: FileService) {}
+  constructor(
+    public fileService: FileService,
+    private filePreviewService: FilePreviewService
+  ) {}
   
   ngOnInit(): void {
     this.fileService.initTree();
@@ -290,8 +294,8 @@ export class FileExplorerComponent implements OnInit {
       // Toggle expand/collapse for directories
       this.fileService.toggleNode(node);
     } else {
-      // Select file and show preview
-      this.fileService.selectFile(node);
+      // Open file in preview tabs
+      this.filePreviewService.openFile(node);
     }
   }
   
@@ -305,7 +309,7 @@ export class FileExplorerComponent implements OnInit {
   }
   
   isSelected(node: TreeNode): boolean {
-    return this.fileService.selectedFile()?.path === node.path;
+    return this.filePreviewService.activePath() === node.path;
   }
   
   getIndent(node: TreeNode): number {

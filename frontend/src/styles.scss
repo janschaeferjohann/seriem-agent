@@ -128,6 +128,26 @@ body {
   background: var(--bg-tertiary);
 }
 
+// Monaco Editor uses its own (non-native) scrollbars. Override them to match the app scrollbar theme.
+.monaco-editor .scrollbar,
+.monaco-editor .monaco-scrollable-element > .scrollbar {
+  background: var(--bg-tertiary) !important;
+}
+
+.monaco-editor .scrollbar .slider {
+  background: var(--kw-darkgrey) !important;
+  border-radius: 5px !important;
+  box-shadow: inset 0 0 0 2px var(--bg-tertiary);
+}
+
+.monaco-editor .scrollbar .slider:hover {
+  background: var(--kw-red) !important;
+}
+
+.monaco-editor .scrollbar-shadow {
+  box-shadow: none !important;
+}
+
 // Code/mono text
 code, pre, .mono {
   font-family: var(--font-mono);
