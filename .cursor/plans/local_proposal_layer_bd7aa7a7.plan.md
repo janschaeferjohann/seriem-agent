@@ -132,6 +132,105 @@ contextBridge.exposeInMainWorld('electronAPI', {
 });
 ```
 
+#### Python Detection and Error Handling
+
+The `findPython()` function must handle missing Python gracefully:
+
+```javascript
+function findPython() {
+  const candidates = [
+    'python3',
+    'python',
+    'C:\\Python311\\python.exe',
+    'C:\\Python312\\python.exe',
+    path.join(process.env.LOCALAPPDATA, 'Programs', 'Python', 'Python311', 'python.exe'),
+    path.join(process.env.LOCALAPPDATA, 'Programs', 'Python', 'Python312', 'python.exe'),
+  ];
+  
+  for (const candidate of candidates) {
+    try {
+      const result = execSync(`${candidate} --version`, { stdio: 'pipe' });
+      const version = result.toString().match(/Python (\d+)\.(\d+)/);
+      if (version && parseInt(version[1]) >= 3 && parseInt(version[2]) >= 11) {
+        return candidate;
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+  return null;
+}
+
+// On app ready, before spawning backend:
+const pythonPath = findPython();
+if (!pythonPath) {
+  dialog.showErrorBox(
+    'Python Not Found',
+    'Seriem Agent requires Python 3.11 or later.\n\n' +
+    'Please install Python from:\nhttps://www.python.org/downloads/\n\n' +
+    'Make sure to check "Add Python to PATH" during installation.'
+  );
+  app.quit();
+  return;
+}
+```
+
+#### Port Conflict Handling
+
+Try multiple ports if 8000 is in use:
+
+```javascript
+async function findAvailablePort(startPort = 8000, maxAttempts = 5) {
+  for (let port = startPort; port < startPort + maxAttempts; port++) {
+    try {
+      const server = net.createServer();
+      await new Promise((resolve, reject) => {
+        server.once('error', reject);
+        server.once('listening', () => {
+          server.close();
+          resolve();
+        });
+        server.listen(port);
+      });
+      return port;
+    } catch (e) {
+      continue;
+    }
+  }
+  throw new Error('No available ports found');
+}
+
+// Usage:
+const port = await findAvailablePort(8000);
+const backend = spawn(pythonPath, ['-m', 'uvicorn', 'app.main:app', '--port', String(port)], ...);
+
+// Pass port to frontend via IPC
+ipcMain.handle('config:getBackendPort', () => port);
+```
+
+#### TypeScript Definitions for Frontend
+
+Create `frontend/src/electron.d.ts`:
+
+```typescript
+export interface ElectronAPI {
+  selectFolder(): Promise<string | null>;
+  getApiKey(): Promise<string>;
+  setApiKey(key: string): Promise<boolean>;
+  getBackendPort(): Promise<number>;
+  getGlobalSettings(): Promise<GlobalSettings>;
+  setGlobalSettings(settings: Partial<GlobalSettings>): Promise<boolean>;
+}
+
+declare global {
+  interface Window {
+    electronAPI?: ElectronAPI;
+  }
+}
+
+export {};
+```
+
 ### Phase 1: Workspace Selection
 
 **Backend changes** ([`backend/app/main.py`](backend/app/main.py), [`backend/app/api/routes.py`](backend/app/api/routes.py)):
@@ -210,32 +309,65 @@ If workspace is a git repo:
 - Show git status in file explorer
 - Show uncommitted changes indicator
 
+### Phase 5: First-Run Experience
+
+On first launch (no API key configured), show a setup wizard:
+
+```typescript
+// first-run-wizard.component.ts
+@Component({
+  template: `
+    <div class="wizard-overlay">
+      <div class="wizard-panel">
+        @switch (step()) {
+          @case (1) {
+            <h2>Welcome to Seriem Agent</h2>
+            <p>Let's get you set up in a few quick steps.</p>
+            <button (click)="nextStep()">Get Started</button>
+          }
+          @case (2) {
+            <h2>API Key</h2>
+            <p>Enter your Anthropic API key to enable the AI assistant.</p>
+            <input type="password" [(ngModel)]="apiKey" placeholder="sk-ant-..." />
+            <a href="https://console.anthropic.com/settings/keys" target="_blank">Get an API key</a>
+            <button (click)="validateAndNext()" [disabled]="!apiKey">Continue</button>
+          }
+          @case (3) {
+            <h2>Select Workspace</h2>
+            <p>Choose a folder to work with. You can change this anytime.</p>
+            <button (click)="selectFolder()">Browse...</button>
+            <span>{{ selectedFolder() || 'No folder selected' }}</span>
+            <button (click)="finish()" [disabled]="!selectedFolder()">Start Using Seriem</button>
+          }
+        }
+      </div>
+    </div>
+  `
+})
+```
+
+**Trigger conditions**:
+- No API key in Electron store
+- Show on app startup before main UI
+
+**Skip option**: Allow "Skip for now" but show reminder badge in header
+
 ## Files to Create/Modify
 
 | File | Change |
-
 |------|--------|
-
-| `desktop/main.js` | NEW: Electron main process |
-
+| `desktop/main.js` | NEW: Electron main process with Python detection + port handling |
 | `desktop/preload.js` | NEW: Secure IPC bridge |
-
 | `desktop/package.json` | NEW: Electron + electron-builder config |
-
+| `frontend/src/electron.d.ts` | NEW: TypeScript definitions for window.electronAPI |
+| `frontend/src/app/components/first-run-wizard/` | NEW: First-run setup wizard |
 | [`backend/app/main.py`](backend/app/main.py) | Dynamic workspace root |
-
 | [`backend/app/api/routes.py`](backend/app/api/routes.py) | Workspace + proposal endpoints |
-
 | `backend/app/proposals/` | NEW: Proposal models, store, routes |
-
 | [`backend/app/tools/filesystem.py`](backend/app/tools/filesystem.py) | Proposal-based writes |
-
 | [`backend/app/agents/main_agent.py`](backend/app/agents/main_agent.py) | Update system prompt to mention approval flow |
-
 | [`frontend/src/app/services/file.service.ts`](frontend/src/app/services/file.service.ts) | Workspace selection via Electron IPC |
-
 | `frontend/src/app/components/change-review/` | NEW: Diff review component |
-
 | [`docs/seriem-agent/agents/mainagent.md`](docs/seriem-agent/agents/mainagent.md) | Document proposal model |
 
 ## Electron Build Configuration
@@ -301,14 +433,18 @@ If workspace is a git repo:
 ## Rollout Order
 
 1. **Electron shell** - basic app that spawns backend and loads frontend
-2. **Native folder picker IPC** - workspace selection works
-3. **Workspace selection API** (backend) - dynamic root path
-4. **Proposal store + API** (backend) - test via curl
-5. **Modify filesystem tools** to create proposals - agent behavior changes
-6. **Diff review UI** - users can now approve/reject
-7. **Electron build** - package as .exe with electron-builder
-8. **Git integration** - optional commit on approve
-9. **Documentation** - update mainagent.md
+2. **Python detection + error dialog** - graceful handling when Python missing
+3. **Port conflict handling** - try alternative ports automatically
+4. **TypeScript definitions** - create `electron.d.ts` for type safety
+5. **Native folder picker IPC** - workspace selection works
+6. **Workspace selection API** (backend) - dynamic root path
+7. **First-run wizard** - API key + workspace setup on first launch
+8. **Proposal store + API** (backend) - test via curl
+9. **Modify filesystem tools** to create proposals - agent behavior changes
+10. **Diff review UI** - users can now approve/reject
+11. **Electron build** - package as .exe with electron-builder
+12. **Git integration** - optional commit on approve
+13. **Documentation** - update mainagent.md
 
 ## Comparison with Centralized Plan
 
@@ -329,6 +465,10 @@ If workspace is a git repo:
 | Multi-user | No (single instance) | Yes |
 
 | Offline capable | Yes (except LLM calls) | No |
+
+
+
+
 
 
 

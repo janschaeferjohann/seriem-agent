@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.api.websocket import websocket_endpoint
+from app.proposals import proposals_router
 
 # Load environment variables from backend/.env (explicit path for reliability)
 _backend_dir = Path(__file__).parent.parent
@@ -57,6 +58,7 @@ app.add_middleware(
 
 # Include REST routes
 app.include_router(router)
+app.include_router(proposals_router)
 
 # WebSocket endpoint
 app.websocket("/ws/chat")(websocket_endpoint)

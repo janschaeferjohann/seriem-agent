@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { FileService, TreeNode } from '../../services/file.service';
 import { FilePreviewService } from '../../services/file-preview.service';
+import { WorkspaceService } from '../../services/workspace.service';
 
 @Component({
   selector: 'app-file-explorer',
@@ -20,8 +21,26 @@ import { FilePreviewService } from '../../services/file-preview.service';
   ],
   template: `
     <div class="file-explorer">
+      <!-- Workspace selector -->
+      <div class="workspace-header">
+        <button class="workspace-selector"
+                matTooltip="Change workspace"
+                (click)="changeWorkspace()"
+                [disabled]="workspaceService.isLoading()">
+          <mat-icon class="workspace-icon">folder_special</mat-icon>
+          <span class="workspace-name">{{ workspaceService.workspaceName() }}</span>
+          @if (workspaceService.isGitRepo()) {
+            <span class="git-branch">
+              <mat-icon>commit</mat-icon>
+              {{ workspaceService.gitBranch() || 'unknown' }}
+            </span>
+          }
+          <mat-icon class="workspace-dropdown">unfold_more</mat-icon>
+        </button>
+      </div>
+      
       <div class="explorer-header">
-        <span class="header-title">Explorer</span>
+        <span class="header-title">Files</span>
         <div class="header-actions">
           <button mat-icon-button 
                   matTooltip="Refresh"
@@ -105,6 +124,78 @@ import { FilePreviewService } from '../../services/file-preview.service';
       height: 100%;
       min-height: 0;
       overflow: hidden;
+    }
+    
+    .workspace-header {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    
+    .workspace-selector {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      width: 100%;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12px;
+      text-align: left;
+      
+      &:hover {
+        background: var(--bg-hover);
+        border-color: var(--border-subtle);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+    
+    .workspace-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--accent-primary);
+      flex-shrink: 0;
+    }
+    
+    .workspace-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .git-branch {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 11px;
+      color: var(--accent-secondary);
+      flex-shrink: 0;
+      
+      mat-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+      }
+    }
+    
+    .workspace-dropdown {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      flex-shrink: 0;
     }
     
     .explorer-header {
@@ -282,11 +373,25 @@ export class FileExplorerComponent implements OnInit {
   
   constructor(
     public fileService: FileService,
-    private filePreviewService: FilePreviewService
+    private filePreviewService: FilePreviewService,
+    public workspaceService: WorkspaceService
   ) {}
   
   ngOnInit(): void {
     this.fileService.initTree();
+  }
+  
+  /**
+   * Open folder picker to change workspace
+   */
+  async changeWorkspace(): Promise<void> {
+    const success = await this.workspaceService.selectWorkspace();
+    if (success) {
+      // Refresh file tree after workspace change
+      this.fileService.initTree();
+      // Close any open file previews
+      this.filePreviewService.closeAll();
+    }
   }
   
   onNodeClick(node: TreeNode, event: Event): void {

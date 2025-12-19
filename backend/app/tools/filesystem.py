@@ -1,27 +1,26 @@
-"""Filesystem tools for the agent to interact with local storage."""
+"""Filesystem tools for the agent to interact with local storage.
 
-import os
+Write operations create proposals that must be approved by the user
+before changes are applied to the filesystem.
+"""
+
 from pathlib import Path
-from typing import Optional
 
 from langchain_core.tools import tool
 
-# Storage root - all operations are relative to this
-# Default to ../storage (project root's storage folder when running from backend/)
-_default_storage = Path(__file__).parent.parent.parent.parent / "storage"
-STORAGE_ROOT = Path(os.getenv("STORAGE_PATH", str(_default_storage))).resolve()
+from app.workspace import get_workspace_manager
+from app.proposals import get_proposal_store, OperationType
 
 
 def _safe_path(path: str) -> Path:
-    """Resolve path safely within storage root."""
-    # Normalize and resolve the path
-    resolved = (STORAGE_ROOT / path).resolve()
-    
-    # Ensure it's within storage root (prevent directory traversal)
-    if not str(resolved).startswith(str(STORAGE_ROOT)):
-        raise ValueError(f"Path '{path}' is outside storage directory")
-    
-    return resolved
+    """Resolve path safely within workspace root."""
+    workspace = get_workspace_manager()
+    return workspace.safe_path(path)
+
+
+def _get_workspace_root() -> Path:
+    """Get the current workspace root path."""
+    return get_workspace_manager().root
 
 
 @tool
@@ -96,42 +95,70 @@ def read_file(path: str) -> str:
 def write_file(path: str, content: str) -> str:
     """Write content to a file. Creates the file if it doesn't exist, overwrites if it does.
     
+    NOTE: This creates a proposal that must be approved by the user before
+    the changes are applied to the filesystem.
+    
     Args:
-        path: File path relative to storage root.
+        path: File path relative to workspace root.
         content: Content to write to the file.
         
     Returns:
-        Success or error message.
+        Confirmation that a proposal was created, pending user approval.
     """
     try:
         target = _safe_path(path)
+        store = get_proposal_store()
         
-        # Create parent directories if needed
-        target.parent.mkdir(parents=True, exist_ok=True)
+        # Determine operation type and get existing content
+        if target.exists() and target.is_file():
+            try:
+                before = target.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                return f"Error: Cannot modify '{path}' - it is not a text file"
+            operation = OperationType.UPDATE
+        else:
+            before = None
+            operation = OperationType.CREATE
         
-        target.write_text(content, encoding="utf-8")
-        return f"Successfully wrote {len(content)} bytes to '{path}'"
+        # Create proposal
+        proposal = store.create_proposal(
+            path=path,
+            operation=operation,
+            before=before,
+            after=content,
+        )
+        
+        op_verb = "Update" if operation == OperationType.UPDATE else "Create"
+        return (
+            f"Proposed {op_verb.lower()} to '{path}' "
+            f"(proposal_id: {proposal.proposal_id}). "
+            f"Awaiting user approval."
+        )
     
     except ValueError as e:
         return f"Error: {e}"
     except Exception as e:
-        return f"Error writing file: {e}"
+        return f"Error creating proposal: {e}"
 
 
 @tool
 def edit_file(path: str, old_str: str, new_str: str) -> str:
     """Edit a file by replacing a string. The old_str must match exactly.
     
+    NOTE: This creates a proposal that must be approved by the user before
+    the changes are applied to the filesystem.
+    
     Args:
-        path: File path relative to storage root.
+        path: File path relative to workspace root.
         old_str: The exact string to find and replace.
         new_str: The string to replace it with.
         
     Returns:
-        Success or error message.
+        Confirmation that a proposal was created, pending user approval.
     """
     try:
         target = _safe_path(path)
+        store = get_proposal_store()
         
         if not target.exists():
             return f"Error: File '{path}' does not exist"
@@ -149,32 +176,48 @@ def edit_file(path: str, old_str: str, new_str: str) -> str:
         if count > 1:
             return f"Error: Found {count} occurrences of the text. Please provide more context to make it unique."
         
-        # Perform replacement
+        # Compute new content
         new_content = content.replace(old_str, new_str)
-        target.write_text(new_content, encoding="utf-8")
         
-        return f"Successfully edited '{path}'"
+        # Create proposal
+        proposal = store.create_proposal(
+            path=path,
+            operation=OperationType.UPDATE,
+            before=content,
+            after=new_content,
+            summary=f"Edit {path}: replace text",
+        )
+        
+        return (
+            f"Proposed edit to '{path}' "
+            f"(proposal_id: {proposal.proposal_id}). "
+            f"Awaiting user approval."
+        )
     
     except ValueError as e:
         return f"Error: {e}"
     except UnicodeDecodeError:
         return f"Error: File '{path}' is not a text file"
     except Exception as e:
-        return f"Error editing file: {e}"
+        return f"Error creating proposal: {e}"
 
 
 @tool
 def delete_file(path: str) -> str:
-    """Delete a file from storage.
+    """Delete a file from the workspace.
+    
+    NOTE: This creates a proposal that must be approved by the user before
+    the file is actually deleted.
     
     Args:
-        path: File path relative to storage root.
+        path: File path relative to workspace root.
         
     Returns:
-        Success or error message.
+        Confirmation that a proposal was created, pending user approval.
     """
     try:
         target = _safe_path(path)
+        store = get_proposal_store()
         
         if not target.exists():
             return f"Error: File '{path}' does not exist"
@@ -182,15 +225,30 @@ def delete_file(path: str) -> str:
         if not target.is_file():
             return f"Error: '{path}' is not a file. Use delete_directory for directories."
         
-        target.unlink()
-        return f"Successfully deleted file '{path}'"
+        # Get current content for the proposal
+        try:
+            content = target.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            content = "(binary file)"
+        
+        # Create proposal
+        proposal = store.create_proposal(
+            path=path,
+            operation=OperationType.DELETE,
+            before=content,
+            after=None,
+        )
+        
+        return (
+            f"Proposed deletion of '{path}' "
+            f"(proposal_id: {proposal.proposal_id}). "
+            f"Awaiting user approval."
+        )
     
     except ValueError as e:
         return f"Error: {e}"
-    except PermissionError:
-        return f"Error: Permission denied to delete '{path}'"
     except Exception as e:
-        return f"Error deleting file: {e}"
+        return f"Error creating proposal: {e}"
 
 
 @tool
@@ -215,9 +273,9 @@ def delete_directory(path: str, recursive: bool = False) -> str:
         if not target.is_dir():
             return f"Error: '{path}' is not a directory. Use delete_file for files."
         
-        # Prevent deleting the storage root itself
-        if target == STORAGE_ROOT:
-            return "Error: Cannot delete the storage root directory"
+        # Prevent deleting the workspace root itself
+        if target == _get_workspace_root():
+            return "Error: Cannot delete the workspace root directory"
         
         if recursive:
             shutil.rmtree(target)

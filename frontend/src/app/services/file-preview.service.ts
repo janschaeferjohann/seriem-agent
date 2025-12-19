@@ -9,6 +9,11 @@ export interface OpenTab {
   content: string;
   isLoading: boolean;
   error: string | null;
+  // Diff mode fields
+  isDiff?: boolean;
+  originalContent?: string;
+  modifiedContent?: string;
+  proposalId?: string;
 }
 
 @Injectable({
@@ -98,6 +103,58 @@ export class FilePreviewService {
     this.activePath.set(nextTabs[Math.min(nextIdx, nextTabs.length - 1)].path);
   }
 
+  /**
+   * Close all open tabs
+   */
+  closeAll(): void {
+    this.openTabs.set([]);
+    this.activePath.set(null);
+  }
+
+  /**
+   * Open a diff view for a proposal
+   */
+  openDiff(filePath: string, originalContent: string, modifiedContent: string, proposalId: string): void {
+    // Create a unique path for the diff tab
+    const diffPath = `diff:${proposalId}:${filePath}`;
+    const fileName = filePath.split('/').pop() || filePath;
+    
+    // Check if already open
+    const existing = this.openTabs().find(t => t.path === diffPath);
+    if (existing) {
+      this.activePath.set(existing.path);
+      return;
+    }
+    
+    const tab: OpenTab = {
+      path: diffPath,
+      name: `⚡ ${fileName}`,
+      language: this.inferLanguage(fileName),
+      content: modifiedContent,
+      isLoading: false,
+      error: null,
+      isDiff: true,
+      originalContent,
+      modifiedContent,
+      proposalId,
+    };
+    
+    this.openTabs.update(tabs => [...tabs, tab]);
+    this.activePath.set(tab.path);
+  }
+
+  /**
+   * Close diff tab(s) for a specific proposal
+   */
+  closeDiffForProposal(proposalId: string): void {
+    const tabs = this.openTabs();
+    const diffTabs = tabs.filter(t => t.proposalId === proposalId);
+    
+    for (const tab of diffTabs) {
+      this.closeTab(tab.path);
+    }
+  }
+
   private updateTab(path: string, updates: Partial<OpenTab>): void {
     this.openTabs.update(tabs =>
       tabs.map(t => (t.path === path ? { ...t, ...updates } : t))
@@ -110,6 +167,7 @@ export class FilePreviewService {
       case 'xml':
       case 'xsd':
       case 'xslt':
+      case 'datamodel':
         return 'xml';
       case 'json':
       case 'formio':
@@ -121,10 +179,18 @@ export class FilePreviewService {
         return 'typescript';
       case 'js':
         return 'javascript';
+      case 'py':
+        return 'python';
       case 'md':
         return 'markdown';
       case 'txt':
         return 'plaintext';
+      case 'css':
+        return 'css';
+      case 'scss':
+        return 'scss';
+      case 'html':
+        return 'html';
       default:
         return 'plaintext';
     }
