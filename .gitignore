@@ -63,7 +63,7 @@ coverage/
 storage/
 
 # Plan files (cursor)
-*.plan.md
+#*.plan.md
 
 # Documentation
 # docs/
