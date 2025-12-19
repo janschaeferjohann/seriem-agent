@@ -1,41 +1,3 @@
----
-name: CentralServer_ElectronClient
-overview: Move all LLM calls + observability to a centralized FastAPI server, while the Electron client owns local filesystem + git and enforces diff-based review/approval before applying changes.
-todos:
-  - id: backend-auth-logging
-    content: Add minimal per-user auth (PAT) + requestId + JSONL trace logging to backend
-    status: pending
-  - id: backend-proposal-endpoint
-    content: Implement /api/proposals that calls Anthropic and returns structured ChangeProposal (per-file before/after) and logs all inputs/outputs
-    status: pending
-    dependencies:
-      - backend-auth-logging
-  - id: electron-shell
-    content: Add Electron wrapper for the existing Angular UI (secure preload + IPC bridge)
-    status: pending
-  - id: local-workspace-fs-git
-    content: Implement workspace selection + safe local fs + git operations in Electron main process and expose minimal IPC API
-    status: pending
-    dependencies:
-      - electron-shell
-  - id: frontend-local-files
-    content: Refactor FileExplorer/FilePreview services to use IPC in Electron mode (keep HTTP mode for browser dev)
-    status: pending
-    dependencies:
-      - local-workspace-fs-git
-  - id: diff-review-approve
-    content: Add diff review UI + approve/reject + apply changes locally (optional git commit) + report outcome to backend for logging
-    status: pending
-    dependencies:
-      - backend-proposal-endpoint
-      - frontend-local-files
-  - id: docs-mainagent-update
-    content: Update docs/seriem-agent/agents/mainagent.md to reflect new write model (client applies proposals)
-    status: pending
-    dependencies:
-      - diff-review-approve
----
-
 # CentralizedBackend_ElectronLocalWorkspace_MVP
 
 ## Goals (what we will build)
@@ -60,7 +22,7 @@ This eliminates special cases: the server never touches disk; the client never t
 
 ## Target architecture (data flow)
 
-```mermaid
+````mermaid
 flowchart TD
   ElectronClient[ElectronClient] -->|AuthToken,ChatOrEditRequest,Context| BackendAPI[BackendAPI_FastAPI]
   BackendAPI -->|AnthropicRequest| AnthropicAPI[AnthropicAPI]
@@ -76,7 +38,7 @@ flowchart TD
 
 - Add token-based auth so every request is attributable to a **userId**.
 - MVP-friendly default: **Personal Access Token (PAT)** per user (no password UI required).
-  - Later upgrade path: password login + JWT.
+    - Later upgrade path: password login + JWT.
 
 **Files likely touched/added**:
 
@@ -85,28 +47,28 @@ flowchart TD
 ### 2) Central “LLM proxy” endpoint that returns ChangeProposals
 
 - Add an endpoint like `POST /api/proposals` that accepts:
-  - `userPrompt`
-  - `context` (selected file contents, optional `git diff`, optional “open files” list)
+    - `userPrompt`
+    - `context` (selected file contents, optional `git diff`, optional “open files” list)
 - Backend calls Anthropic and returns a **structured ChangeProposal** (per-file before/after).
-  - This is intentionally **not** “server tools writing files”.
+    - This is intentionally **not** “server tools writing files”.
 
 **Files likely touched/added**:
 
 - [`backend/app/api/routes.py`](backend/app/api/routes.py) (add proposal endpoint)
 - Potentially a new module [`backend/app/llm/`](backend/app/llm/) for:
-  - prompt templates
-  - response validation/parsing (Pydantic)
-  - retry-on-invalid-json
+    - prompt templates
+    - response validation/parsing (Pydantic)
+    - retry-on-invalid-json
 
 ### 3) Logging/tracing (JSONL)
 
 - Write JSON lines to `backend/logs/trace-YYYY-MM-DD.jsonl` (already gitignored).
 - Log at least:
-  - request start/end
-  - userPrompt + context metadata
-  - model request/response (full content, as you chose)
-  - proposal payload (diff/before/after)
-  - approve/reject and apply result
+    - request start/end
+    - userPrompt + context metadata
+    - model request/response (full content, as you chose)
+    - proposal payload (diff/before/after)
+    - approve/reject and apply result
 
 **Files likely touched/added**:
 
@@ -134,14 +96,14 @@ You already have streaming via [`backend/app/api/websocket.py`](backend/app/api/
 ### 6) Local filesystem + git layer (in Electron main process)
 
 - Implement a `WorkspaceManager` that:
-  - prompts user to **select a repo/folder**
-  - enforces safe path rules (no `..` escapes)
+    - prompts user to **select a repo/folder**
+    - enforces safe path rules (no `..` escapes)
 - Implement minimal IPC APIs exposed to Angular:
-  - `selectWorkspace()`
-  - `listDir(relPath)`
-  - `readFile(relPath)`
-  - `writeFile(relPath, content)`
-  - `gitStatus()` / `gitDiff()` (since `git_required`)
+    - `selectWorkspace()`
+    - `listDir(relPath)`
+    - `readFile(relPath)`
+    - `writeFile(relPath, content)`
+    - `gitStatus()` / `gitDiff()` (since `git_required`)
 
 ### 7) Replace server-storage file explorer with local file explorer
 
@@ -154,8 +116,8 @@ Plan:
 
 - Create a small abstraction so web-mode can still use HTTP, but Electron uses IPC.
 - Update:
-  - [`frontend/src/app/services/file.service.ts`](frontend/src/app/services/file.service.ts)
-  - [`frontend/src/app/services/file-preview.service.ts`](frontend/src/app/services/file-preview.service.ts)
+    - [`frontend/src/app/services/file.service.ts`](frontend/src/app/services/file.service.ts)
+    - [`frontend/src/app/services/file-preview.service.ts`](frontend/src/app/services/file-preview.service.ts)
 
 This keeps “never break userspace”: browser mode can keep the old behavior for dev.
 
@@ -169,11 +131,11 @@ You already have Monaco wired for file preview:
 Plan:
 
 - Add a `change-review` component that renders:
-  - per-file diff (Monaco DiffEditor or unified diff rendering)
-  - “Approve & Apply” / “Reject”
+    - per-file diff (Monaco DiffEditor or unified diff rendering)
+    - “Approve & Apply” / “Reject”
 - Apply changes only on approval:
-  - write `after` content for each changed file (simple, deterministic)
-  - optionally `git commit -m "seriem-agent: <summary>"`
+    - write `after` content for each changed file (simple, deterministic)
+    - optionally `git commit -m "seriem-agent: <summary>"`
 
 ### 9) Keyboard shortcuts (Electron-strength)
 
@@ -185,7 +147,7 @@ Plan:
 Because the main agent will no longer “write to server storage” in the MVP architecture, update:
 
 - [`docs/seriem-agent/agents/mainagent.md`](docs/seriem-agent/agents/mainagent.md)
-  - change “main agent is the only writer” → “client applies ChangeProposals after approval”.
+    - change “main agent is the only writer” → “client applies ChangeProposals after approval”.
 
 ## Rollout order (minimize risk)
 
@@ -197,4 +159,8 @@ Because the main agent will no longer “write to server storage” in the MVP a
 
 - **Payload size**: sending full file contents to server/logs can get huge; MVP needs size limits.
 - **Security**: Electron must sandbox IPC and enforce rootPathLocal.
-- **Correctness**: always show the diff of exactly what will be written; no hidden writes.
+
+
+
+
+````

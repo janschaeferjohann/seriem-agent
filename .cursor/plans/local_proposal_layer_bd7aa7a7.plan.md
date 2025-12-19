@@ -1,60 +1,3 @@
----
-name: Local_Proposal_Layer
-overview: Package Seriem Agent as an Electron app (.exe) that spawns the local Python backend, with workspace selection and a proposal/approval layer for safe file changes.
-todos:
-  - id: electron-shell
-    content: Create desktop/ folder with Electron main process that spawns Python backend and loads Angular
-    status: pending
-  - id: electron-native-picker
-    content: Add IPC bridge for native folder picker dialog (dialog.showOpenDialog)
-    status: pending
-    dependencies:
-      - electron-shell
-  - id: workspace-backend
-    content: Add workspace selection API endpoints (select, current) and dynamic STORAGE_ROOT
-    status: pending
-  - id: workspace-frontend
-    content: Add workspace picker UI using Electron native dialog via IPC
-    status: pending
-    dependencies:
-      - workspace-backend
-      - electron-native-picker
-  - id: proposal-models
-    content: Create backend/app/proposals/ module with Pydantic models and in-memory store
-    status: pending
-  - id: proposal-api
-    content: Add proposal management API endpoints (list, get, approve, reject)
-    status: pending
-    dependencies:
-      - proposal-models
-  - id: tools-proposal-mode
-    content: Modify filesystem tools (write/edit/delete) to create proposals instead of immediate writes
-    status: pending
-    dependencies:
-      - proposal-models
-  - id: diff-review-ui
-    content: Create change-review component with Monaco DiffEditor and approve/reject actions
-    status: pending
-    dependencies:
-      - proposal-api
-  - id: agent-prompt-update
-    content: Update main agent system prompt to explain proposal/approval flow
-    status: pending
-    dependencies:
-      - tools-proposal-mode
-  - id: electron-build
-    content: Configure electron-builder for Windows .exe packaging with README for Python prerequisite
-    status: pending
-    dependencies:
-      - electron-shell
-      - diff-review-ui
-  - id: docs-update
-    content: Update docs/seriem-agent/agents/mainagent.md to document proposal model
-    status: pending
-    dependencies:
-      - tools-proposal-mode
----
-
 # Local Backend with Proposal Layer MVP (Electron Packaged)
 
 ## Problem Statement
@@ -91,7 +34,7 @@ Users must have **Python 3.11+** installed. The Electron app will:
 
 ## Architecture
 
-```mermaid
+````mermaid
 flowchart TD
   exe[User_Launches_SeriemAgent.exe] --> electron[Electron_Main_Process]
   electron -->|spawns| python[Python_FastAPI_Backend]
@@ -387,4 +330,6 @@ If workspace is a git repo:
 
 | Offline capable | Yes (except LLM calls) | No |
 
-| Distribution | .exe (requires Python installed) | Web app + Electron client |
+
+
+````

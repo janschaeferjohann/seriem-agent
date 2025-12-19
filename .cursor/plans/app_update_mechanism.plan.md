@@ -10,21 +10,11 @@ Users have Seriem Agent installed as an Electron .exe. When you release new vers
 
 ## Key Insight: Separate Shell from App Code
 
-The Electron shell (main.js, preload.js) changes **rarely**. The actual app (Python backend + Angular frontend) changes **frequently**.
-
-**Two-tier update strategy:**
-
-| Layer | Contents | Update Frequency | Update Method |
-
-|-------|----------|------------------|---------------|
-
-| Shell | Electron main/preload, Python launcher | Rarely (breaking changes only) | Full installer download |
-
-| App Code | Backend Python, Frontend Angular | Frequently | In-place zip extraction |
+The Electron shell (main.js, preload.js) changes **rarely**. The actual app (Python backend + Angular frontend) changes **frequently**.**Two-tier update strategy:**| Layer | Contents | Update Frequency | Update Method ||-------|----------|------------------|---------------|| Shell | Electron main/preload, Python launcher | Rarely (breaking changes only) | Full installer download || App Code | Backend Python, Frontend Angular | Frequently | In-place zip extraction |
 
 ## Architecture
 
-```mermaid
+````mermaid
 flowchart TD
   subgraph electron_shell [Electron Shell - Stable]
     main[main.js]
@@ -290,4 +280,7 @@ if (newReqs !== oldReqs) {
 - Delta updates (only download changed files)
 - Automatic silent updates (always prompt user)
 - Rollback UI (manual reinstall for now)
-- Update channels (stable/beta)
+
+
+
+````
