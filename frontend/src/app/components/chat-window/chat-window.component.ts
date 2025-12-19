@@ -64,15 +64,15 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
         
         @for (message of agentService.messages(); track $index) {
           <div class="message" [class]="message.role">
-            <div class="message-avatar">
-              @if (message.role === 'user') {
-                <mat-icon>person</mat-icon>
-              } @else {
-                <span class="agent-icon">◈</span>
-              }
-            </div>
             <div class="message-content">
               <div class="message-header">
+                <div class="message-avatar">
+                  @if (message.role === 'user') {
+                    <mat-icon>person</mat-icon>
+                  } @else {
+                    <span class="agent-icon">◈</span>
+                  }
+                </div>
                 <span class="message-sender">{{ message.role === 'user' ? 'You' : 'Agent' }}</span>
                 <span class="message-time">{{ formatTime(message.timestamp) }}</span>
               </div>
@@ -294,7 +294,6 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
       overflow-y: scroll;
       overflow-x: hidden;
       padding: var(--spacing-md);
-      padding-right: 4px;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -387,7 +386,7 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
     
     .message {
       display: flex;
-      gap: var(--spacing-sm);
+      flex-direction: column;
       
       &.user {
         .message-avatar {
@@ -403,22 +402,22 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
     }
     
     .message-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-md);
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       
       mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
       }
       
       .agent-icon {
-        font-size: 16px;
+        font-size: 12px;
         color: var(--accent-primary);
       }
     }
@@ -431,7 +430,7 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
     .message-header {
       display: flex;
       align-items: center;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-xs);
       margin-bottom: var(--spacing-xs);
     }
     
