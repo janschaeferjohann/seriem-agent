@@ -92,5 +92,3 @@ flowchart TD
 ## Gaps (Now Integrated)
 
 All previously identified gaps have been integrated into their respective plans:| Gap | Integrated Into ||-----|-----------------|| Electron TypeScript Types | [local_proposal_layer](local_proposal_layer_bd7aa7a7.plan.md) - Phase 0 || Browser Dev Mode Fallback | [frontend_settings_page](frontend_settings_page_ea4150ad.plan.md) - Runtime Environment Detection || Python Not Installed Handling | [local_proposal_layer](local_proposal_layer_bd7aa7a7.plan.md) - Phase 0 || Port Conflict Handling | [local_proposal_layer](local_proposal_layer_bd7aa7a7.plan.md) - Phase 0 || First-Run Experience | [local_proposal_layer](local_proposal_layer_bd7aa7a7.plan.md) - Phase 5 || Documentation Updates | [local_proposal_layer](local_proposal_layer_bd7aa7a7.plan.md) - Rollout Order step 13 |---
-
-## Implementation Timeline (Suggested)

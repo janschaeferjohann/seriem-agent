@@ -159,5 +159,3 @@ const env = {
 | File | Change ||------|--------|| [`backend/app/main.py`](backend/app/main.py) | Add LangSmith env var check and log || [`backend/.env.example`](backend/env.example) | Add LANGSMITH_TRACING and LANGSMITH_API_KEY || [`desktop/main.js`](desktop/main.js) | Pass LangSmith settings to backend env || [`desktop/preload.js`](desktop/preload.js) | Expose LangSmith settings IPC || [`frontend/src/electron.d.ts`](frontend/src/electron.d.ts) | Add LangSmith settings types || [`frontend/src/app/components/settings/settings.component.ts`](frontend/src/app/components/settings/settings.component.ts) | Add LangSmith toggle + API key field || [`frontend/src/app/services/settings.service.ts`](frontend/src/app/services/settings.service.ts) | Add LangSmith settings to GlobalSettings || [`.cursor/plans/local_telemetry_storage_0cd2cd4a.plan.md`](.cursor/plans/local_telemetry_storage_0cd2cd4a.plan.md) | Update scope to focus on business events |
 
 ## Benefits of Hybrid Approach
-
-1. **Development**: Enable LangSmith for rich debugging (automatic deep traces)
