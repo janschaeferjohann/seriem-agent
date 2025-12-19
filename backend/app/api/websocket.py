@@ -7,6 +7,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from langchain_core.messages import HumanMessage, AIMessage
 
 from app.agents import get_agent_executor, TOOLS
+from app.telemetry import get_telemetry_client
 
 
 async def websocket_endpoint(websocket: WebSocket):
@@ -59,6 +60,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 suppressing_xml_echo = False
                 last_xml_tool_output: str | None = None
                 tool_depth = 0
+                tool_call_count = 0  # Track total tool calls for telemetry
 
                 # If an XML-producing tool already returned XML, do not let the model
                 # echo that XML back as normal assistant text.
@@ -144,6 +146,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         tool_name = event.get("name", "unknown")
                         tool_input = event.get("data", {}).get("input", {})
                         tool_depth += 1
+                        tool_call_count += 1  # Increment for telemetry
                         await websocket.send_text(json.dumps({
                             "type": "tool_call",
                             "content": {
@@ -198,7 +201,32 @@ async def websocket_endpoint(websocket: WebSocket):
                     "content": full_response,
                 }))
                 
+                # Emit telemetry for this chat turn
+                telemetry = get_telemetry_client()
+                if telemetry:
+                    telemetry.emit_chat_turn(
+                        message_length=len(user_content),
+                        had_tool_calls=tool_call_count > 0,
+                        tool_count=tool_call_count,
+                        had_error=False,
+                    )
+                
             except Exception as e:
+                # Emit error telemetry
+                telemetry = get_telemetry_client()
+                if telemetry:
+                    telemetry.emit_chat_turn(
+                        message_length=len(user_content),
+                        had_tool_calls=False,
+                        tool_count=0,
+                        had_error=True,
+                    )
+                    telemetry.emit_error(
+                        error_type="chat_error",
+                        message=str(e),
+                        context={"user_content_length": len(user_content)},
+                    )
+                
                 await websocket.send_text(json.dumps({
                     "type": "error",
                     "content": str(e),

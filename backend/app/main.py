@@ -9,8 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.api.settings import router as settings_router
+from app.api.telemetry import router as telemetry_router
 from app.api.websocket import websocket_endpoint
 from app.proposals import proposals_router
+from app.telemetry import init_telemetry
 
 # Load environment variables from backend/.env (explicit path for reliability)
 _backend_dir = Path(__file__).parent.parent
@@ -41,6 +43,29 @@ _default_storage = Path(__file__).parent.parent.parent / "storage"
 STORAGE_ROOT = Path(os.getenv("STORAGE_PATH", str(_default_storage))).resolve()
 STORAGE_ROOT.mkdir(parents=True, exist_ok=True)
 
+# Telemetry configuration
+TELEMETRY_ENABLED = os.getenv("TELEMETRY_ENABLED", "1") == "1"
+TELEMETRY_DIR = Path(os.getenv("TELEMETRY_DIR", str(_backend_dir / "telemetry_data")))
+
+# Initialize telemetry
+if TELEMETRY_ENABLED:
+    init_telemetry(TELEMETRY_DIR, enabled=True)
+    print(f"[OK] Telemetry enabled, storing to: {TELEMETRY_DIR}")
+else:
+    init_telemetry(TELEMETRY_DIR, enabled=False)
+    print("[--] Telemetry disabled")
+
+# LangSmith configuration (backend-only, not user-facing)
+LANGSMITH_TRACING = os.getenv("LANGSMITH_TRACING", "false").lower() == "true"
+if LANGSMITH_TRACING:
+    langsmith_key = os.getenv("LANGSMITH_API_KEY", "")
+    if langsmith_key:
+        print("[OK] LangSmith tracing enabled (deep LLM/tool traces)")
+    else:
+        print("[!] LangSmith tracing enabled but LANGSMITH_API_KEY not set")
+else:
+    print("[--] LangSmith tracing disabled (set LANGSMITH_TRACING=true to enable)")
+
 # Create FastAPI app
 app = FastAPI(
     title="Seriem Agent API",
@@ -61,6 +86,7 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(settings_router)
 app.include_router(proposals_router)
+app.include_router(telemetry_router)
 
 # WebSocket endpoint
 app.websocket("/ws/chat")(websocket_endpoint)

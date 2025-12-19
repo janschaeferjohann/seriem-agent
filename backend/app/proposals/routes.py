@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.workspace import get_workspace_manager
+from app.telemetry import get_telemetry_client
 from .models import ChangeProposal, ProposalSummary, ProposalResult, FileChange
 from .store import get_proposal_store
 
@@ -170,6 +171,14 @@ async def approve_proposal(proposal_id: str, request: ApproveRequest = ApproveRe
     # Remove from pending
     store.remove(proposal_id)
     
+    # Emit telemetry for proposal approval
+    telemetry = get_telemetry_client()
+    if telemetry:
+        telemetry.emit_proposal_decision(
+            proposal_id=proposal_id,
+            decision="approved",
+        )
+    
     return ProposalResult(
         proposal_id=proposal_id,
         action="approved",
@@ -188,6 +197,14 @@ async def reject_proposal(proposal_id: str):
     proposal = store.remove(proposal_id)
     if proposal is None:
         raise HTTPException(status_code=404, detail=f"Proposal {proposal_id} not found")
+    
+    # Emit telemetry for proposal rejection
+    telemetry = get_telemetry_client()
+    if telemetry:
+        telemetry.emit_proposal_decision(
+            proposal_id=proposal_id,
+            decision="rejected",
+        )
     
     return ProposalResult(
         proposal_id=proposal_id,

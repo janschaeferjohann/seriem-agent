@@ -610,4 +610,6 @@ The JSONL format is designed to be directly uploadable - each line is a valid ev
 7. **Settings integration** - telemetry toggle + viewer link
 
 
+
+
 ````

@@ -10,10 +10,12 @@ import { FilePreviewComponent } from './components/file-preview/file-preview.com
 import { ChangeReviewComponent } from './components/change-review/change-review.component';
 import { FirstRunWizardComponent } from './components/first-run-wizard/first-run-wizard.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { TelemetryViewerComponent } from './components/telemetry-viewer/telemetry-viewer.component';
 
 import { FilePreviewService } from './services/file-preview.service';
 import { ProposalService } from './services/proposal.service';
 import { SettingsService } from './services/settings.service';
+import { TelemetryService } from './services/telemetry.service';
 
 // Check if running in Electron
 const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
@@ -32,6 +34,7 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
     ChangeReviewComponent,
     FirstRunWizardComponent,
     SettingsComponent,
+    TelemetryViewerComponent,
   ],
   template: `
     <!-- First-run wizard -->
@@ -145,6 +148,9 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
       
       <!-- Settings Panel (slides in from right) -->
       <app-settings />
+      
+      <!-- Telemetry Viewer Panel (slides in from right) -->
+      <app-telemetry-viewer />
     </div>
   `,
   styles: [`
@@ -490,6 +496,7 @@ export class AppComponent {
     public filePreviewService: FilePreviewService,
     public proposalService: ProposalService,
     public settingsService: SettingsService,
+    public telemetryService: TelemetryService,
   ) {
     this.restoreLayout();
     // TODO: Re-enable when first-run wizard is needed

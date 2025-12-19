@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 from threading import Lock
 
 from .models import ChangeProposal, FileChange, OperationType, ProposalSummary
+from app.telemetry import get_telemetry_client
 
 
 class ProposalStore:
@@ -61,6 +62,15 @@ class ProposalStore:
         
         with self._lock:
             self._proposals[proposal.proposal_id] = proposal
+        
+        # Emit telemetry for proposal creation
+        telemetry = get_telemetry_client()
+        if telemetry:
+            telemetry.emit_proposal_created(
+                proposal_id=proposal.proposal_id,
+                file_count=1,
+                operations=[operation.value],
+            )
         
         return proposal
     

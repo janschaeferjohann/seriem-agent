@@ -19,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { SettingsService, WorkspaceSettings } from '../../services/settings.service';
+import { TelemetryService } from '../../services/telemetry.service';
 
 // Check if running in Electron
 const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
@@ -257,6 +258,13 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
               Enable telemetry
             </mat-slide-toggle>
             <span class="toggle-hint">Help improve Seriem Agent by sharing anonymous usage data</span>
+            
+            <button mat-stroked-button 
+                    class="view-telemetry-btn"
+                    (click)="openTelemetryViewer()">
+              <mat-icon>analytics</mat-icon>
+              View Telemetry
+            </button>
           </div>
           
           @if (isElectron) {
@@ -701,6 +709,22 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
       line-height: 1.4;
     }
     
+    .view-telemetry-btn {
+      margin-top: 8px;
+      margin-left: 44px;
+      font-size: 11px;
+      height: 28px;
+      line-height: 28px;
+      padding: 0 12px;
+      
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        margin-right: 4px;
+      }
+    }
+    
     /* Compact slide toggle - override Material blue */
     ::ng-deep mat-slide-toggle {
       --mdc-switch-selected-handle-color: #E30018 !important;
@@ -809,7 +833,10 @@ export class SettingsComponent implements OnInit {
   telemetryEnabled = true;
   isRestarting = signal(false);
   
-  constructor(public settingsService: SettingsService) {}
+  constructor(
+    public settingsService: SettingsService,
+    private telemetryService: TelemetryService,
+  ) {}
   
   ngOnInit(): void {
     // Load settings when component initializes
@@ -939,6 +966,12 @@ export class SettingsComponent implements OnInit {
   
   async saveTelemetryPreference(): Promise<void> {
     await this.settingsService.saveGlobalSettings({ telemetryEnabled: this.telemetryEnabled });
+  }
+  
+  openTelemetryViewer(): void {
+    // Close settings panel and open telemetry viewer
+    this.settingsService.closeSettingsPanel();
+    this.telemetryService.openViewer();
   }
   
   async restartBackend(): Promise<void> {
