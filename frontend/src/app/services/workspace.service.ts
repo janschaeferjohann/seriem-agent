@@ -1,6 +1,8 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, of, catchError, switchMap, tap } from 'rxjs';
+import { ApiConfigService } from './api-config.service';
+import { isElectron } from '../utils/environment';
 
 export interface WorkspaceInfo {
   root_path: string;
@@ -31,36 +33,13 @@ export class WorkspaceService {
   readonly gitBranch = computed(() => this.workspace()?.git_branch ?? null);
   
   // Check if running in Electron
-  readonly isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+  readonly isElectron = isElectron;
   
-  private readonly apiUrl = this.getApiUrl();
+  private readonly apiConfig = inject(ApiConfigService);
   
   constructor(private http: HttpClient) {
     // Load current workspace on init
     this.loadCurrentWorkspace();
-  }
-  
-  /**
-   * Get the API URL, using Electron IPC to get port if available
-   */
-  private getApiUrl(): string {
-    // Default URL for browser dev mode
-    return 'http://localhost:8000/api';
-  }
-  
-  /**
-   * Initialize the API URL by getting the backend port from Electron
-   */
-  async initializeApiUrl(): Promise<void> {
-    if (this.isElectron && window.electronAPI?.getBackendPort) {
-      try {
-        const port = await window.electronAPI.getBackendPort();
-        // Note: We can't change the readonly apiUrl here, 
-        // so we'd need to make requests with the port directly
-      } catch (e) {
-        console.warn('Failed to get backend port from Electron:', e);
-      }
-    }
   }
   
   /**
@@ -70,7 +49,7 @@ export class WorkspaceService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    this.http.get<WorkspaceInfo>(`${this.apiUrl}/workspace/current`).pipe(
+    this.http.get<WorkspaceInfo>(`${this.apiConfig.apiUrl}/workspace/current`).pipe(
       catchError(err => {
         console.error('Failed to load current workspace:', err);
         this.error.set(err.error?.detail || 'Failed to load workspace');
@@ -121,7 +100,7 @@ export class WorkspaceService {
     this.error.set(null);
     
     return new Promise((resolve) => {
-      this.http.post<WorkspaceInfo>(`${this.apiUrl}/workspace/select`, { path }).pipe(
+      this.http.post<WorkspaceInfo>(`${this.apiConfig.apiUrl}/workspace/select`, { path }).pipe(
         catchError(err => {
           console.error('Failed to select workspace:', err);
           this.error.set(err.error?.detail || 'Failed to select workspace');

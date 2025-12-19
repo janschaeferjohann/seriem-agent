@@ -1,6 +1,7 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { FileInfo, FileContentResponse } from './file.service';
+import { ApiConfigService } from './api-config.service';
 
 export interface OpenTab {
   path: string;
@@ -20,7 +21,7 @@ export interface OpenTab {
   providedIn: 'root',
 })
 export class FilePreviewService {
-  private readonly apiUrl = 'http://localhost:8000/api';
+  private readonly apiConfig = inject(ApiConfigService);
 
   readonly openTabs = signal<OpenTab[]>([]);
   readonly activePath = signal<string | null>(null);
@@ -55,7 +56,7 @@ export class FilePreviewService {
     this.openTabs.update(tabs => [...tabs, tab]);
     this.activePath.set(tab.path);
 
-    this.http.get<FileContentResponse>(`${this.apiUrl}/files/${encodeURIComponent(file.path)}`).subscribe({
+    this.http.get<FileContentResponse>(`${this.apiConfig.apiUrl}/files/${encodeURIComponent(file.path)}`).subscribe({
       next: (response) => {
         this.updateTab(file.path, {
           content: response.content,

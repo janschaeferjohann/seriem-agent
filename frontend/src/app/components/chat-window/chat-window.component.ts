@@ -949,8 +949,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
         const el = this.messagesContainer.nativeElement;
         el.scrollTop = el.scrollHeight;
       }
-    } catch (e) {
-      console.error('Scroll error:', e);
+    } catch {
+      // Scroll errors can be safely ignored
     }
   }
 }

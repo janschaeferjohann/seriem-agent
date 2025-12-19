@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
+import { ApiConfigService } from './api-config.service';
 
 export interface FileInfo {
   name: string;
@@ -30,7 +31,7 @@ export interface FileContentResponse {
   providedIn: 'root'
 })
 export class FileService {
-  private readonly apiUrl = 'http://localhost:8000/api';
+  private readonly apiConfig = inject(ApiConfigService);
   
   // Signals for reactive state
   readonly treeNodes = signal<TreeNode[]>([]);
@@ -49,7 +50,7 @@ export class FileService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    this.http.get<FileListResponse>(`${this.apiUrl}/files`).pipe(
+    this.http.get<FileListResponse>(`${this.apiConfig.apiUrl}/files`).pipe(
       catchError(err => {
         this.error.set(err.error?.detail || 'Failed to list files');
         return of({ files: [], current_path: '/' });
@@ -105,7 +106,7 @@ export class FileService {
   private loadChildren(node: TreeNode): void {
     this.updateNode(node.path, { isLoading: true });
     
-    const url = `${this.apiUrl}/files?path=${encodeURIComponent(node.path)}`;
+    const url = `${this.apiConfig.apiUrl}/files?path=${encodeURIComponent(node.path)}`;
     
     this.http.get<FileListResponse>(url).pipe(
       catchError(err => {
@@ -155,7 +156,7 @@ export class FileService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    this.http.get<FileContentResponse>(`${this.apiUrl}/files/${encodeURIComponent(path)}`).pipe(
+    this.http.get<FileContentResponse>(`${this.apiConfig.apiUrl}/files/${encodeURIComponent(path)}`).pipe(
       catchError(err => {
         this.error.set(err.error?.detail || 'Failed to read file');
         return of({ path, content: '' });

@@ -9,9 +9,10 @@ seriem-agent/
 ├── backend/          # Python FastAPI + LangChain
 ├── frontend/         # Angular 20 app
 ├── desktop/          # Electron shell for desktop app
+├── docs/             # Documentation
+│   └── seriem-agent/agents/  # Agent architecture docs
 ├── storage/          # Agent workspace (local files)
-├── README.md
-└── agents.md         # Agent architecture docs
+└── README.md
 ```
 
 ## Prerequisites
@@ -138,10 +139,10 @@ In dev mode, Electron will:
 
 ## Future Plans
 
-- Specialized subagents (code generation, review, testing)
-- Git integration for commits on approval
-- Telemetry and usage analytics
-- Auto-update mechanism
+- Additional specialized subagents (code review, testing)
+- Auto-update mechanism for Electron app
+- Enhanced Git integration (push, pull, branch management)
+- LangSmith integration for production monitoring
 
 ## License
 

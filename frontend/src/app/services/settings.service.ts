@@ -5,10 +5,12 @@
  * Falls back to localStorage when running outside Electron (dev mode).
  */
 
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, catchError, tap, firstValueFrom } from 'rxjs';
 import type { GlobalSettings, GitCredentials } from '../../electron';
+import { ApiConfigService } from './api-config.service';
+import { isElectron } from '../utils/environment';
 
 // Workspace settings interfaces
 export interface GitCredentialsOverride {
@@ -38,10 +40,10 @@ export interface GitStatusResponse {
   providedIn: 'root'
 })
 export class SettingsService {
-  private readonly apiUrl = 'http://localhost:8000/api/settings';
+  private readonly apiConfig = inject(ApiConfigService);
   
   // Environment detection
-  readonly isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+  readonly isElectron = isElectron;
   
   // Reactive state signals
   readonly globalSettings = signal<GlobalSettings | null>(null);
@@ -184,7 +186,7 @@ export class SettingsService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    return this.http.get<WorkspaceSettingsResponse>(`${this.apiUrl}/workspace`).pipe(
+    return this.http.get<WorkspaceSettingsResponse>(`${this.apiConfig.apiUrl}/settings/workspace`).pipe(
       tap(response => {
         this.workspaceSettings.set(response.settings);
         this.isLoading.set(false);
@@ -205,7 +207,7 @@ export class SettingsService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    return this.http.put<WorkspaceSettingsResponse>(`${this.apiUrl}/workspace`, settings).pipe(
+    return this.http.put<WorkspaceSettingsResponse>(`${this.apiConfig.apiUrl}/settings/workspace`, settings).pipe(
       tap(response => {
         this.workspaceSettings.set(response.settings);
         this.isLoading.set(false);
@@ -227,7 +229,7 @@ export class SettingsService {
    * Check git status of current workspace
    */
   loadGitStatus(): Observable<GitStatusResponse | null> {
-    return this.http.get<GitStatusResponse>(`${this.apiUrl}/git/status`).pipe(
+    return this.http.get<GitStatusResponse>(`${this.apiConfig.apiUrl}/settings/git/status`).pipe(
       tap(response => {
         this.gitStatus.set(response);
       }),
@@ -259,7 +261,7 @@ export class SettingsService {
     // Note: Full validation would require an actual API call to Anthropic
     try {
       const response = await firstValueFrom(
-        this.http.get<{ status: string }>('http://localhost:8000/health')
+        this.http.get<{ status: string }>(`${this.apiConfig.baseUrl}/health`)
       );
       if (response?.status === 'healthy') {
         return { valid: true, message: 'API key format is valid' };

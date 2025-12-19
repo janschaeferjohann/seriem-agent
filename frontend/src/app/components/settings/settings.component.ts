@@ -20,9 +20,7 @@ import { MatDividerModule } from '@angular/material/divider';
 
 import { SettingsService, WorkspaceSettings } from '../../services/settings.service';
 import { TelemetryService } from '../../services/telemetry.service';
-
-// Check if running in Electron
-const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+import { isElectron } from '../../utils/environment';
 
 @Component({
   selector: 'app-settings',

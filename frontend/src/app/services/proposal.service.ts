@@ -1,6 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of, tap, interval, switchMap } from 'rxjs';
+import { ApiConfigService } from './api-config.service';
 
 export interface FileChange {
   path: string;
@@ -38,7 +39,7 @@ export interface ProposalResult {
   providedIn: 'root'
 })
 export class ProposalService {
-  private readonly apiUrl = 'http://localhost:8000/api/proposals';
+  private readonly apiConfig = inject(ApiConfigService);
   
   // Signals for reactive state
   readonly proposals = signal<ProposalSummary[]>([]);
@@ -109,7 +110,7 @@ export class ProposalService {
    * Fetch proposals from API
    */
   private fetchProposals(): Observable<ProposalSummary[] | null> {
-    return this.http.get<{ proposals: ProposalSummary[], total: number }>(`${this.apiUrl}/pending`).pipe(
+    return this.http.get<{ proposals: ProposalSummary[], total: number }>(`${this.apiConfig.apiUrl}/proposals/pending`).pipe(
       catchError(err => {
         console.error('Failed to fetch proposals:', err);
         return of(null);
@@ -125,7 +126,7 @@ export class ProposalService {
     this.isLoading.set(true);
     this.error.set(null);
     
-    this.http.get<ProposalDetail>(`${this.apiUrl}/${proposalId}`).pipe(
+    this.http.get<ProposalDetail>(`${this.apiConfig.apiUrl}/proposals/${proposalId}`).pipe(
       catchError(err => {
         this.error.set(err.error?.detail || 'Failed to load proposal');
         return of(null);
@@ -181,7 +182,7 @@ export class ProposalService {
    * Clear all proposals
    */
   clearAll(): Observable<boolean> {
-    return this.http.delete<{ cleared: number, message: string }>(`${this.apiUrl}/all`).pipe(
+    return this.http.delete<{ cleared: number, message: string }>(`${this.apiConfig.apiUrl}/proposals/all`).pipe(
       tap(() => {
         this.proposals.set([]);
         this.selectedProposal.set(null);

@@ -16,9 +16,7 @@ import { FilePreviewService } from './services/file-preview.service';
 import { ProposalService } from './services/proposal.service';
 import { SettingsService } from './services/settings.service';
 import { TelemetryService } from './services/telemetry.service';
-
-// Check if running in Electron
-const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+import { isElectron } from './utils/environment';
 
 @Component({
   selector: 'app-root',
@@ -458,7 +456,7 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 export class AppComponent {
   isConnected = false;
   showFirstRunWizard = false;
-  isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+  readonly isElectron = isElectron;
   
   private _chatCollapsed = false;
   get chatCollapsed(): boolean { return this._chatCollapsed; }

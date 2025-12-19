@@ -6,7 +6,7 @@ import re
 from fastapi import WebSocket, WebSocketDisconnect
 from langchain_core.messages import HumanMessage, AIMessage
 
-from app.agents import get_agent_executor, TOOLS
+from app.agents import get_agent_executor
 from app.telemetry import get_telemetry_client
 
 

@@ -62,6 +62,13 @@ coverage/
 # Agent workspace (local storage)
 storage/
 
+# Workspace settings (per-workspace configs)
+.seriem/
+
+# Telemetry data (local telemetry logs)
+telemetry_data/
+backend/telemetry_data/
+
 # Plan files (cursor)
 #*.plan.md
 

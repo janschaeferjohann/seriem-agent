@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ApiConfigService } from './api-config.service';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -40,7 +41,7 @@ export interface WebSocketMessage {
   providedIn: 'root'
 })
 export class AgentService {
-  private readonly wsUrl = 'ws://localhost:8000/ws/chat';
+  private readonly apiConfig = inject(ApiConfigService);
   private ws: WebSocket | null = null;
   
   // Signals for reactive state
@@ -59,18 +60,15 @@ export class AgentService {
       return;
     }
     
-    this.ws = new WebSocket(this.wsUrl);
+    this.ws = new WebSocket(`${this.apiConfig.wsUrl}/ws/chat`);
     
     this.ws.onopen = () => {
       this.isConnected.set(true);
       this.error.set(null);
-      console.log('WebSocket connected');
     };
     
     this.ws.onclose = () => {
       this.isConnected.set(false);
-      console.log('WebSocket disconnected');
-      
       // Attempt reconnect after 3 seconds
       setTimeout(() => this.connect(), 3000);
     };

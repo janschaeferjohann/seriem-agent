@@ -10,9 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 
 import { WorkspaceService } from '../../services/workspace.service';
-
-// Check if running in Electron
-const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
+import { isElectron } from '../../utils/environment';
 
 @Component({
   selector: 'app-first-run-wizard',

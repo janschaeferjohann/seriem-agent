@@ -4,9 +4,10 @@
  * Manages loading and displaying local telemetry data from the backend.
  */
 
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, of, tap } from 'rxjs';
+import { ApiConfigService } from './api-config.service';
 
 export interface TelemetryEvent {
   event_type: string;
@@ -46,7 +47,7 @@ export interface TelemetryFilesResponse {
   providedIn: 'root'
 })
 export class TelemetryService {
-  private readonly apiUrl = 'http://localhost:8000/api/telemetry';
+  private readonly apiConfig = inject(ApiConfigService);
   
   // Reactive state signals
   readonly events = signal<TelemetryEvent[]>([]);
@@ -104,7 +105,7 @@ export class TelemetryService {
       params = params.set('search', search);
     }
     
-    this.http.get<TelemetryEventsResponse>(`${this.apiUrl}/events`, { params })
+    this.http.get<TelemetryEventsResponse>(`${this.apiConfig.apiUrl}/telemetry/events`, { params })
       .pipe(
         tap(response => {
           this.events.set(response.events);
@@ -124,7 +125,7 @@ export class TelemetryService {
    * Load telemetry statistics
    */
   loadStats(): void {
-    this.http.get<TelemetryStats>(`${this.apiUrl}/stats`)
+    this.http.get<TelemetryStats>(`${this.apiConfig.apiUrl}/telemetry/stats`)
       .pipe(
         tap(stats => {
           this.stats.set(stats);
@@ -142,7 +143,7 @@ export class TelemetryService {
    * Load list of telemetry files
    */
   loadFiles(): void {
-    this.http.get<TelemetryFilesResponse>(`${this.apiUrl}/files`)
+    this.http.get<TelemetryFilesResponse>(`${this.apiConfig.apiUrl}/telemetry/files`)
       .pipe(
         tap(response => {
           this.files.set(response.files);
@@ -160,7 +161,7 @@ export class TelemetryService {
    * Export telemetry events as JSONL file
    */
   exportEvents(startDate?: Date, endDate?: Date): void {
-    let url = `${this.apiUrl}/export`;
+    let url = `${this.apiConfig.apiUrl}/telemetry/export`;
     const params: string[] = [];
     
     if (startDate) {
@@ -182,7 +183,7 @@ export class TelemetryService {
    * Enable or disable telemetry collection
    */
   setEnabled(enabled: boolean): void {
-    this.http.post<{ enabled: boolean }>(`${this.apiUrl}/enabled`, null, {
+    this.http.post<{ enabled: boolean }>(`${this.apiConfig.apiUrl}/telemetry/enabled`, null, {
       params: { enabled: enabled.toString() }
     })
       .pipe(
@@ -202,13 +203,12 @@ export class TelemetryService {
    * Clear old telemetry data
    */
   clearOldEvents(beforeDate: Date): void {
-    this.http.delete<{ deleted_files: number }>(`${this.apiUrl}/events`, {
+    this.http.delete<{ deleted_files: number }>(`${this.apiConfig.apiUrl}/telemetry/events`, {
       params: { before_date: beforeDate.toISOString() }
     })
       .pipe(
         tap(response => {
-          console.log(`Deleted ${response.deleted_files} telemetry files`);
-          // Reload data
+          // Reload data after deletion
           this.loadStats();
           this.loadEvents();
         }),
