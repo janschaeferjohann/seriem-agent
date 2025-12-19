@@ -9,9 +9,11 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
 import { FilePreviewComponent } from './components/file-preview/file-preview.component';
 import { ChangeReviewComponent } from './components/change-review/change-review.component';
 import { FirstRunWizardComponent } from './components/first-run-wizard/first-run-wizard.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 import { FilePreviewService } from './services/file-preview.service';
 import { ProposalService } from './services/proposal.service';
+import { SettingsService } from './services/settings.service';
 
 // Check if running in Electron
 const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
@@ -29,6 +31,7 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
     ChatWindowComponent,
     ChangeReviewComponent,
     FirstRunWizardComponent,
+    SettingsComponent,
   ],
   template: `
     <!-- First-run wizard -->
@@ -59,9 +62,19 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
           </button>
         </div>
         
-        <div class="status">
-          <span class="status-dot" [class.connected]="isConnected"></span>
-          <span class="status-text">{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+        <div class="header-right">
+          <!-- Settings Button -->
+          <button class="settings-btn" 
+                  (click)="settingsService.toggleSettingsPanel()" 
+                  matTooltip="Settings"
+                  [class.active]="settingsService.isSettingsPanelOpen()">
+            <mat-icon>settings</mat-icon>
+          </button>
+          
+          <div class="status">
+            <span class="status-dot" [class.connected]="isConnected"></span>
+            <span class="status-text">{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+          </div>
         </div>
       </header>
       
@@ -129,6 +142,9 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
           }
         }
       </main>
+      
+      <!-- Settings Panel (slides in from right) -->
+      <app-settings />
     </div>
   `,
   styles: [`
@@ -171,6 +187,51 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
       display: flex;
       align-items: center;
       gap: var(--spacing-md);
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+    
+    .settings-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+      }
+      
+      &:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+        
+        mat-icon {
+          transform: rotate(45deg);
+        }
+      }
+      
+      &.active {
+        color: var(--kw-red);
+        
+        mat-icon {
+          transform: rotate(45deg);
+        }
+      }
     }
     
     .pending-changes-btn {
@@ -391,6 +452,7 @@ const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 export class AppComponent {
   isConnected = false;
   showFirstRunWizard = false;
+  isElectron = typeof window !== 'undefined' && !!window.electronAPI;
   
   private _chatCollapsed = false;
   get chatCollapsed(): boolean { return this._chatCollapsed; }
@@ -427,6 +489,7 @@ export class AppComponent {
   constructor(
     public filePreviewService: FilePreviewService,
     public proposalService: ProposalService,
+    public settingsService: SettingsService,
   ) {
     this.restoreLayout();
     // TODO: Re-enable when first-run wizard is needed

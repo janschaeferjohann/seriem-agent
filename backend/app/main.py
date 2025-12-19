@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
+from app.api.settings import router as settings_router
 from app.api.websocket import websocket_endpoint
 from app.proposals import proposals_router
 
@@ -22,18 +23,18 @@ if _api_key:
     # Check for common issues
     _stripped = _api_key.strip().strip('"').strip("'")
     if _stripped != _api_key:
-        print(f"⚠ WARNING: API key has extra whitespace or quotes!")
+        print(f"[!] WARNING: API key has extra whitespace or quotes!")
         print(f"  Raw length: {len(_api_key)}, Stripped length: {len(_stripped)}")
         print(f"  Raw repr: {repr(_api_key[:20])}...")
         # Use the cleaned version
         os.environ["ANTHROPIC_API_KEY"] = _stripped
         _api_key = _stripped
         print(f"  Fixed: using stripped key")
-    print(f"✓ ANTHROPIC_API_KEY loaded ({len(_api_key)} chars)")
+    print(f"[OK] ANTHROPIC_API_KEY loaded ({len(_api_key)} chars)")
     print(f"  Starts with: {_api_key[:15]}...")
     print(f"  Ends with: ...{_api_key[-10:]}")
 else:
-    print(f"✗ ANTHROPIC_API_KEY not found! Check {_env_file}")
+    print(f"[X] ANTHROPIC_API_KEY not found! Check {_env_file}")
 
 # Ensure storage directory exists - default to project root's storage folder
 _default_storage = Path(__file__).parent.parent.parent / "storage"
@@ -58,6 +59,7 @@ app.add_middleware(
 
 # Include REST routes
 app.include_router(router)
+app.include_router(settings_router)
 app.include_router(proposals_router)
 
 # WebSocket endpoint

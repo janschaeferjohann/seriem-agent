@@ -36,7 +36,7 @@ Settings will have two layers:
 
 - **Global settings**: Stored in Electron secure storage (API keys, default Git credentials)
 - **Per-workspace settings**: Stored as `.seriem/settings.json` in the workspace root (overrides global)
-```mermaid
+````mermaid
 flowchart TD
   subgraph electron [Electron Layer]
     secureStore[Electron_Secure_Storage]
@@ -285,4 +285,8 @@ The settings page connects to the first-run wizard (see [local_proposal_layer](l
 3. Wizard collects API key and initial workspace
 4. After wizard completes, settings are persisted and main UI loads
 
-The settings panel can also be opened anytime via the gear icon to modify these values.
+
+
+
+
+````

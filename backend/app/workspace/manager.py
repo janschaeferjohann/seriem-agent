@@ -32,6 +32,9 @@ class WorkspaceManager:
         self._git_enabled: bool = False
         self._git_remote: Optional[str] = None
         self._git_branch: Optional[str] = None
+        
+        # Detect git on initialization
+        self._detect_git()
     
     @property
     def root(self) -> Path:

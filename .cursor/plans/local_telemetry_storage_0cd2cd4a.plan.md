@@ -42,7 +42,7 @@ No central server required - all data stays on the user's machine.
 
 ## Architecture
 
-```mermaid
+````mermaid
 flowchart TD
   subgraph electron_app [Electron App]
     angular[Angular_Frontend]
@@ -608,4 +608,6 @@ The JSONL format is designed to be directly uploadable - each line is a valid ev
 5. **Instrument proposals** - ProposalCreated/ProposalDecision events
 6. **Viewer UI** - stats cards + event table + filters
 7. **Settings integration** - telemetry toggle + viewer link
-8. **Export feature** - download JSONL for manual sharing
+
+
+````
