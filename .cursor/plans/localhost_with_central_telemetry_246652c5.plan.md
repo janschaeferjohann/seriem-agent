@@ -129,4 +129,6 @@ If tool behavior changes meaningfully (telemetry side effects + change tracking)
 - **Data volume**: full-content before/after file logs explode quickly; you need caps + compression.
 - **Sensitive code leakage**: internal doesn’t mean harmless; treat central logs as production data.
 
+
+
 ````

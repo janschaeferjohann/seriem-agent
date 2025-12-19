@@ -1,6 +1,5 @@
 """REST API routes for chat and file operations."""
 
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -9,13 +8,14 @@ from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, AIMessage
 
 from app.agents import get_agent_executor
+from app.workspace import get_workspace_manager, Workspace
 
 router = APIRouter(prefix="/api")
 
-# Storage root - default to project root's storage folder
-_default_storage = Path(__file__).parent.parent.parent.parent / "storage"
-STORAGE_ROOT = Path(os.getenv("STORAGE_PATH", str(_default_storage))).resolve()
 
+# ============================================================================
+# Request/Response Models
+# ============================================================================
 
 class ChatRequest(BaseModel):
     """Request model for chat endpoint."""
@@ -26,7 +26,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     """Response model for chat endpoint."""
     response: str
-    
+
 
 class FileInfo(BaseModel):
     """File information model."""
@@ -48,12 +48,65 @@ class FileContentResponse(BaseModel):
     content: str
 
 
+class WorkspaceSelectRequest(BaseModel):
+    """Request model for workspace selection."""
+    path: str
+
+
+class WorkspaceResponse(BaseModel):
+    """Response model for workspace info."""
+    root_path: str
+    git_enabled: bool
+    git_remote: Optional[str] = None
+    git_branch: Optional[str] = None
+
+
 def _safe_path(path: str) -> Path:
-    """Resolve path safely within storage root."""
-    resolved = (STORAGE_ROOT / path).resolve()
-    if not str(resolved).startswith(str(STORAGE_ROOT)):
-        raise HTTPException(status_code=400, detail="Invalid path")
-    return resolved
+    """Resolve path safely within workspace root."""
+    workspace = get_workspace_manager()
+    try:
+        return workspace.safe_path(path)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ============================================================================
+# Workspace Endpoints
+# ============================================================================
+
+@router.post("/workspace/select", response_model=WorkspaceResponse)
+async def select_workspace(request: WorkspaceSelectRequest):
+    """
+    Select a workspace directory.
+    
+    This changes the root directory for all file operations.
+    """
+    try:
+        workspace = get_workspace_manager()
+        result = workspace.select_workspace(request.path)
+        return WorkspaceResponse(
+            root_path=result.root_path,
+            git_enabled=result.git_enabled,
+            git_remote=result.git_remote,
+            git_branch=result.git_branch,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/workspace/current", response_model=WorkspaceResponse)
+async def get_current_workspace():
+    """Get the current workspace information."""
+    workspace = get_workspace_manager()
+    result = workspace.get_current()
+    return WorkspaceResponse(
+        root_path=result.root_path,
+        git_enabled=result.git_enabled,
+        git_remote=result.git_remote,
+        git_branch=result.git_branch,
+    )
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -91,12 +144,13 @@ async def chat(request: ChatRequest):
 
 @router.get("/files", response_model=FileListResponse)
 async def list_files(path: str = ""):
-    """List files in the storage directory."""
+    """List files in the workspace directory."""
     try:
+        workspace = get_workspace_manager()
         target = _safe_path(path)
         
-        # Ensure storage root exists
-        STORAGE_ROOT.mkdir(parents=True, exist_ok=True)
+        # Ensure workspace root exists
+        workspace.root.mkdir(parents=True, exist_ok=True)
         
         if not target.exists():
             raise HTTPException(status_code=404, detail="Directory not found")
@@ -106,7 +160,7 @@ async def list_files(path: str = ""):
         
         files = []
         for entry in sorted(target.iterdir()):
-            rel_path = str(entry.relative_to(STORAGE_ROOT))
+            rel_path = str(entry.relative_to(workspace.root))
             files.append(FileInfo(
                 name=entry.name,
                 path=rel_path,

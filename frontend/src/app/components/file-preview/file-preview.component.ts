@@ -37,6 +37,7 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
             class="tab"
             role="tab"
             [class.active]="tab.path === filePreviewService.activePath()"
+            [class.diff-tab]="tab.isDiff"
             [attr.aria-selected]="tab.path === filePreviewService.activePath()"
             (click)="activate(tab.path)">
             <span class="tab-title" [matTooltip]="tab.path">{{ tab.name }}</span>
@@ -53,6 +54,7 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
       <div class="editor-wrap">
         <div #editorContainer class="editor"></div>
+        <div #diffEditorContainer class="editor diff-editor-container"></div>
 
         @if (activeTab()?.isLoading) {
           <div class="overlay">
@@ -123,6 +125,16 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
         color: var(--text-primary);
         border-bottom-color: var(--accent-primary);
       }
+
+      &.diff-tab {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 2px solid var(--accent-warning);
+        
+        &.active {
+          background: rgba(245, 158, 11, 0.15);
+          border-bottom-color: var(--accent-warning);
+        }
+      }
     }
 
     .tab-title {
@@ -158,6 +170,12 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
       inset: 0;
     }
 
+    .diff-editor-container {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
     .overlay {
       position: absolute;
       inset: 0;
@@ -186,13 +204,15 @@ import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 })
 export class FilePreviewComponent implements AfterViewInit, OnDestroy {
   @ViewChild('editorContainer') private editorContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('diffEditorContainer') private diffEditorContainer!: ElementRef<HTMLDivElement>;
 
   private monaco: typeof monaco | null = null;
   private editor: monaco.editor.IStandaloneCodeEditor | null = null;
+  private diffEditor: monaco.editor.IStandaloneDiffEditor | null = null;
   private readonly models = new Map<string, monaco.editor.ITextModel>();
   private readonly viewStates = new Map<string, monaco.editor.ICodeEditorViewState | null>();
   private activeModelPath: string | null = null;
-  private resizeObserver: ResizeObserver | null = null;
+  private currentMode: 'normal' | 'diff' = 'normal';
 
   constructor(
     public filePreviewService: FilePreviewService,
@@ -203,7 +223,7 @@ export class FilePreviewComponent implements AfterViewInit, OnDestroy {
   activeTab = () => this.filePreviewService.activeTab();
 
   async ngAfterViewInit(): Promise<void> {
-    await this.initEditor();
+    await this.initMonaco();
 
     runInInjectionContext(this.injector, () => {
       effect(() => {
@@ -213,20 +233,16 @@ export class FilePreviewComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    try {
-      this.resizeObserver?.disconnect();
-      this.resizeObserver = null;
-    } catch {
-      // ignore
-    }
 
-    // Dispose editor before models
+    // Dispose editors before models
     try {
       this.editor?.dispose();
+      this.diffEditor?.dispose();
     } catch {
       // ignore
     }
     this.editor = null;
+    this.diffEditor = null;
 
     for (const model of this.models.values()) {
       try {
@@ -247,10 +263,12 @@ export class FilePreviewComponent implements AfterViewInit, OnDestroy {
     this.filePreviewService.closeTab(path);
   }
 
-  private async initEditor(): Promise<void> {
+  private async initMonaco(): Promise<void> {
     const monacoApi = await this.monacoLoader.load();
     this.monaco = monacoApi;
 
+    // Create both editors upfront with automaticLayout enabled
+    // automaticLayout uses window resize events to auto-adjust editor size
     this.editor = monacoApi.editor.create(this.editorContainer.nativeElement, {
       value: '',
       language: 'xml',
@@ -265,30 +283,84 @@ export class FilePreviewComponent implements AfterViewInit, OnDestroy {
       scrollBeyondLastLine: false,
       wordWrap: 'on',
       theme: 'vs',
-      automaticLayout: false,
+      automaticLayout: true,
     });
 
-    this.resizeObserver = new ResizeObserver(() => {
-      this.editor?.layout();
+    this.diffEditor = monacoApi.editor.createDiffEditor(this.diffEditorContainer.nativeElement, {
+      readOnly: true,
+      renderSideBySide: true,
+      minimap: { enabled: false },
+      scrollbar: {
+        verticalScrollbarSize: 10,
+        horizontalScrollbarSize: 10,
+        useShadows: false,
+      },
+      scrollBeyondLastLine: false,
+      theme: 'vs',
+      automaticLayout: true,
+      enableSplitViewResizing: true,
+      originalEditable: false,
     });
-    this.resizeObserver.observe(this.editorContainer.nativeElement);
+
+    // Hide diff editor container initially
+    this.diffEditorContainer.nativeElement.style.display = 'none';
 
     // Ensure first layout after DOM paint
     setTimeout(() => this.editor?.layout(), 0);
   }
 
   private syncActiveTabToEditor(): void {
-    if (!this.monaco || !this.editor) return;
+    if (!this.monaco || !this.editor || !this.diffEditor) return;
 
     const tab = this.filePreviewService.activeTab();
     if (!tab) {
       this.editor.setModel(null);
       this.activeModelPath = null;
+      this.showEditor('normal');
       return;
     }
 
+    // Check if this is a diff tab
+    if (tab.isDiff) {
+      this.showDiffEditor(tab);
+    } else {
+      this.showNormalEditor(tab);
+    }
+
+    this.activeModelPath = tab.path;
+  }
+
+  private showEditor(mode: 'normal' | 'diff'): void {
+    if (!this.editor || !this.diffEditor) return;
+
+    const editorEl = this.editorContainer.nativeElement;
+    const diffEl = this.diffEditorContainer.nativeElement;
+
+    if (mode === 'diff') {
+      editorEl.style.display = 'none';
+      diffEl.style.display = 'block';
+      // Defer layout to next frame for proper dimensions
+      requestAnimationFrame(() => {
+        if (this.diffEditor && diffEl) {
+          this.diffEditor.layout({ width: diffEl.offsetWidth, height: diffEl.offsetHeight });
+        }
+      });
+    } else {
+      diffEl.style.display = 'none';
+      editorEl.style.display = 'block';
+      this.editor.layout();
+    }
+
+    this.currentMode = mode;
+  }
+
+  private showNormalEditor(tab: OpenTab): void {
+    if (!this.monaco || !this.editor) return;
+
+    this.showEditor('normal');
+
     // Save view state for previous model
-    if (this.activeModelPath && this.activeModelPath !== tab.path) {
+    if (this.activeModelPath && this.activeModelPath !== tab.path && this.currentMode === 'normal') {
       this.viewStates.set(this.activeModelPath, this.editor.saveViewState());
     }
 
@@ -314,10 +386,33 @@ export class FilePreviewComponent implements AfterViewInit, OnDestroy {
       this.editor.restoreViewState(viewState);
     }
 
-    this.activeModelPath = tab.path;
-
-    // Layout because tab switches can happen during/after splitter drag
     this.editor.layout();
+  }
+
+  private showDiffEditor(tab: OpenTab): void {
+    if (!this.monaco || !this.diffEditor) return;
+
+    this.showEditor('diff');
+
+    const originalContent = tab.originalContent || '';
+    const modifiedContent = tab.modifiedContent || tab.content || '';
+    const language = tab.language || 'plaintext';
+
+    const originalModel = this.monaco.editor.createModel(originalContent, language);
+    const modifiedModel = this.monaco.editor.createModel(modifiedContent, language);
+
+    this.diffEditor.setModel({
+      original: originalModel,
+      modified: modifiedModel,
+    });
+
+    // Defer layout to allow browser to compute container dimensions after display:block
+    requestAnimationFrame(() => {
+      const container = this.diffEditorContainer?.nativeElement;
+      const width = container?.offsetWidth || 0;
+      const height = container?.offsetHeight || 0;
+      this.diffEditor?.layout({ width, height });
+    });
   }
 }
 

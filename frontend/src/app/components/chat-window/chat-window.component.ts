@@ -26,12 +26,17 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
   template: `
     <div class="chat-window">
       <div class="chat-header">
-        <span class="header-title">Chat</span>
+        <span class="header-title">CHAT</span>
         <div class="header-actions">
           <button mat-icon-button 
                   matTooltip="Clear chat"
                   (click)="clearChat()">
             <mat-icon>delete_outline</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  matTooltip="Collapse panel"
+                  (click)="collapse.emit()">
+            <mat-icon>chevron_right</mat-icon>
           </button>
         </div>
       </div>
@@ -261,6 +266,10 @@ import { AgentService, ChatMessage, ToolCall } from '../../services/agent.servic
     }
     
     .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      
       button {
         width: 24px;
         height: 24px;
@@ -748,6 +757,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('inputField') private inputField!: ElementRef<HTMLTextAreaElement>;
   
   connectionChange = output<boolean>();
+  collapse = output<void>();
   
   inputMessage = '';
   private connectionInterval: ReturnType<typeof setInterval> | null = null;
